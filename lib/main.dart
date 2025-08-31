@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tugas_16_api/views/login.dart';
+import 'package:tugas_16_api/views/halaman.dart';
 
 void main() {
   // initializeDateFormatting("id_ID");
@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
       //   login1.id: (context) => const login1(),
       //   Dashboard1.id: (context) => const Dashboard1(),
       // },
-      home: LoginPage(),
+      home: HalamanMulai(),
     );
     // Navigator.pushNamed(context, '/Tugas6');
     // return MaterialApp(

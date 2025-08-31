@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   bool rememberMe = false;
   bool isVisibility = false;
   bool _obscurePassword = true;
@@ -17,56 +17,40 @@ class _LoginPageState extends State<LoginPage> {
       body: SafeArea(
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 20),
-                  Column(
-                    children: [
-                      Center(
-                        child: Text(
-                          "Welcome",
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                  IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
 
-                      SizedBox(height: 5),
-                      Center(
-                        child: Text(
-                          "Please enter your data to continue",
-                          style: TextStyle(color: Colors.grey),
-                        ),
+                  SizedBox(height: 20),
+                  Center(
+                    child: Text(
+                      "Sign Up",
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
+                    ),
                   ),
                   SizedBox(height: 30),
-
                   TextField(
                     decoration: InputDecoration(
-                      labelText: "Email",
-                      hintText: "Enter Email",
-                      prefixIcon: Icon(Icons.email),
+                      labelText: "Username",
+                      hintText: "Enter username",
+                      prefixIcon: Icon(Icons.person),
                     ),
                   ),
                   SizedBox(height: 30),
 
                   TextField(
                     obscureText: _obscurePassword,
-                    // obscureText: true,
                     decoration: InputDecoration(
                       labelText: "Password",
                       hintText: "Enter password",
@@ -86,24 +70,21 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 10),
-
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        "Forgot password?",
-                        style: TextStyle(color: Colors.red),
-                      ),
+                  SizedBox(height: 20),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: "Email Address",
+                      hintText: "Enter Email",
+                      prefixIcon: Icon(Icons.email),
                     ),
                   ),
+                  SizedBox(height: 20),
 
                   // Row(
                   //   children: [
                   //     Text("Remember me"),
                   //     Row(
-                  //       crossAxisAlignment: CrossAxisAlignment.end,
+                  //       mainAxisAlignment: MainAxisAlignment.center,
                   //       children: [
                   //         Switch(
                   //           value: rememberMe,
