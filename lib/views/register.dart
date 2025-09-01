@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_16_api/API/register.dart';
+import 'package:tugas_16_api/model/register_model.dart';
+import 'package:tugas_16_api/shared_preference/shared.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -8,9 +11,63 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  bool rememberMe = false;
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  // bool rememberMe = false;
   bool isVisibility = false;
   bool _obscurePassword = true;
+  bool isLoading = false;
+
+  RegisterUserModel? user;
+  String? errorMessage;
+  @override
+  void registerUser() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    final name = nameController.text.trim();
+    if (email.isEmpty || password.isEmpty || name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Email, Password, dan Nama tidak boleh kosong"),
+        ),
+      );
+      isLoading = false;
+
+      return;
+    }
+    try {
+      final result = await AuthenticationAPI.registerUser(
+        email: email,
+        password: password,
+        name: name,
+      );
+      setState(() {
+        user = result;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Pendaftaran berhasil")));
+      PreferenceHandler.saveToken(user?.data.token.toString() ?? "");
+      print(user?.toJson());
+    } catch (e) {
+      print(e);
+      setState(() {
+        errorMessage = e.toString();
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(errorMessage.toString())));
+    } finally {
+      setState(() {});
+      isLoading = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,6 +98,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   SizedBox(height: 30),
                   TextField(
+                    controller: nameController,
                     decoration: InputDecoration(
                       labelText: "Username",
                       hintText: "Enter username",
@@ -50,6 +108,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   SizedBox(height: 30),
 
                   TextField(
+                    controller: passwordController,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       labelText: "Password",
@@ -72,6 +131,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   SizedBox(height: 20),
                   TextField(
+                    controller: emailController,
                     decoration: InputDecoration(
                       labelText: "Email Address",
                       hintText: "Enter Email",
@@ -102,8 +162,8 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
             Spacer(),
-
             SizedBox(
+              height: 60,
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -114,10 +174,10 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
                 onPressed: () {
-                  // context.push(RegisterPage());
+                  registerUser();
                 },
                 child: Text(
-                  "Login",
+                  "Register",
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),

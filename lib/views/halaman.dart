@@ -127,6 +127,7 @@ class HalamanMulai extends StatelessWidget {
 
             SizedBox(
               width: double.infinity,
+              height: 60,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purple,

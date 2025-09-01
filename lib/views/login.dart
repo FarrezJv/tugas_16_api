@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_16_api/API/register.dart';
+import 'package:tugas_16_api/extension/navigation.dart';
+import 'package:tugas_16_api/model/register_model.dart';
+import 'package:tugas_16_api/shared_preference/shared.dart';
+import 'package:tugas_16_api/views/dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -8,9 +13,66 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   bool rememberMe = false;
   bool isVisibility = false;
   bool _obscurePassword = true;
+  bool isLoading = false;
+
+  RegisterUserModel? user;
+  String? errorMessage;
+  @override
+  void loginUser() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    // final name = nameController.text.trim();
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Email, Password, dan Nama tidak boleh kosong"),
+        ),
+      );
+      isLoading = false;
+
+      return;
+    }
+    try {
+      final result = await AuthenticationAPI.loginUser(
+        email: email,
+        password: password,
+        // name: name,
+      );
+      setState(() {
+        user = result;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Login berhasil")));
+      PreferenceHandler.saveToken(user?.data.token.toString() ?? "");
+      // Navigator.pushReplacementNamed(Dashboard1.id);
+      context.pushReplacement(DashboardPage());
+
+      print(user?.toJson());
+    } catch (e) {
+      print(e);
+      setState(() {
+        errorMessage = e.toString();
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(errorMessage.toString())));
+    } finally {
+      setState(() {});
+      isLoading = false;
+    }
+    // context.pushReplacementNamed(Dashboard1.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,6 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(height: 30),
 
                   TextField(
+                    controller: emailController,
                     decoration: InputDecoration(
                       labelText: "Email",
                       hintText: "Enter Email",
@@ -65,6 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(height: 30),
 
                   TextField(
+                    controller: passwordController,
                     obscureText: _obscurePassword,
                     // obscureText: true,
                     decoration: InputDecoration(
@@ -123,6 +187,7 @@ class _LoginPageState extends State<LoginPage> {
             Spacer(),
 
             SizedBox(
+              height: 60,
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -133,7 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 onPressed: () {
-                  // context.push(RegisterPage());
+                  loginUser();
                 },
                 child: Text(
                   "Login",
