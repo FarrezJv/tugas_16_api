@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tugas_16_api/api/brand.dart';
-import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/model/brand_user_model.dart';
-import 'package:tugas_16_api/views/tambah.dart';
+import 'package:tugas_16_api/model/get_brand.dart';
+import 'package:tugas_16_api/utils/gambar.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -13,7 +13,7 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   final TextEditingController nameController = TextEditingController();
-  AddBrand? userData;
+  GetBrand? userData;
   bool isLoading = true;
   String errorMessage = '';
 
@@ -27,11 +27,11 @@ class _DashboardPageState extends State<DashboardPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Image.asset(AppImage.logo_png, width: 150),
                 Text(
-                  "Hello",
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                  "Welcome to BrandNow.",
+                  style: TextStyle(color: Colors.grey),
                 ),
-                Text("Welcome to Laza.", style: TextStyle(color: Colors.grey)),
                 SizedBox(height: 20),
                 Row(
                   children: [
@@ -58,7 +58,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     Container(
                       padding: EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.purple,
+                        color: const Color(0xFF8A6BE4),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(Icons.mic, color: Colors.white),
@@ -94,154 +94,66 @@ class _DashboardPageState extends State<DashboardPage> {
                             ) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return const CircularProgressIndicator();
+                                return Center(
+                                  child: SizedBox(
+                                    width: 50,
+                                    height: 50,
+                                    child: const CircularProgressIndicator(
+                                      strokeWidth: 4,
+                                    ),
+                                  ),
+                                );
                               } else if (snapshot.hasData) {
                                 final brands = snapshot.data!;
-
-                                // final filteredUsers = users.where((user) {
-                                //   final name = user.fullName.toLowerCase() ?? "";
-                                //   // return name.contains(_searchQuery);
-                                // }).toList();
-
-                                // if (filteredUsers.isEmpty) {
-                                //   return const Text("Karakter tidak ditemukan.");
-                                // }
-
                                 return SizedBox(
                                   height: 50,
                                   child: ListView.builder(
                                     scrollDirection: Axis.horizontal,
                                     itemCount: brands.length,
-                                    itemBuilder: (BuildContext context, int index) {
-                                      final dataUser = brands[index];
-                                      return GestureDetector(
-                                        child: Container(
-                                          margin: const EdgeInsets.only(
-                                            right: 12,
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 20,
-                                            vertical: 12,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.blueAccent.shade100,
-                                            borderRadius: BorderRadius.circular(
-                                              30,
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black12,
-                                                blurRadius: 4,
-                                                offset: Offset(2, 2),
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                          final dataUser = brands[index];
+                                          return GestureDetector(
+                                            child: Container(
+                                              margin: const EdgeInsets.only(
+                                                right: 12,
                                               ),
-                                            ],
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              dataUser.name,
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.white,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 20,
+                                                    vertical: 12,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFF8A6BE4),
+                                                borderRadius:
+                                                    BorderRadius.circular(30),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black12,
+                                                    blurRadius: 4,
+                                                    offset: Offset(2, 2),
+                                                  ),
+                                                ],
                                               ),
-                                            ),
-                                          ),
-                                        ),
-                                        onTap: () async {
-                                          final dialog =
-                                              await showDialog(
-                                                context: context,
-                                                builder: (context) => StatefulBuilder(
-                                                  builder: (context, setState) {
-                                                    return AlertDialog(
-                                                      title: Text("Edit Data"),
-                                                      content: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          TextFormField(
-                                                            controller:
-                                                                nameController
-                                                                  ..text =
-                                                                      userData
-                                                                          ?.data
-                                                                          .name ??
-                                                                      '-',
-                                                            // decoration: InputDecoration(
-                                                            //   hintText: "Pertanyaan",
-                                                            // ),
-                                                          ),
-                                                          SizedBox(height: 12),
-                                                        ],
-                                                      ),
-                                                      actions: [
-                                                        ElevatedButton(
-                                                          onPressed: () async {
-                                                            setState(() {
-                                                              isLoading = true;
-                                                            });
-                                                            // await BrandAPI.updateBrand(
-                                                            //   name:
-                                                            //       nameController
-                                                            //           .text,
-                                                            // ); ERORRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
-                                                            setState(() {
-                                                              isLoading = false;
-                                                            });
-                                                            Navigator.pop(
-                                                              context,
-                                                            );
-                                                          },
-                                                          child: isLoading
-                                                              ? CircularProgressIndicator()
-                                                              : Text("OK"),
-                                                        ),
-                                                        ElevatedButton(
-                                                          onPressed: () =>
-                                                              Navigator.pop(
-                                                                context,
-                                                              ),
-                                                          child: Text("Back"),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  },
+                                              child: Center(
+                                                child: Text(
+                                                  dataUser.name,
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.white,
+                                                  ),
                                                 ),
-                                              ).then((value) async {
-                                                final data =
-                                                    await BrandAPI.getBrand();
-                                                setState(() {
-                                                  // userData = data; ERORRRRRRRR
-                                                  isLoading = false;
-                                                });
-                                              });
+                                              ),
+                                            ),
+                                          );
                                         },
-                                      );
-                                    },
                                   ),
                                 );
                               } else {
                                 return const Text("Gagal Memuat data");
                               }
                             },
-                      ),
-                    ),
-                    SizedBox(width: 5),
-
-                    SizedBox(
-                      width: 50,
-                      child: Expanded(
-                        child: Container(
-                          width: 20,
-                          color: Color.fromARGB(255, 235, 235, 235),
-                          height: 50,
-                          child: IconButton(
-                            icon: Icon(Icons.add),
-                            onPressed: () {
-                              context.push(TambahBrand());
-                            },
-                          ),
-                        ),
                       ),
                     ),
                   ],

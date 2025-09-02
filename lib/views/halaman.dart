@@ -5,7 +5,7 @@ import 'package:tugas_16_api/views/register.dart';
 
 class HalamanMulai extends StatelessWidget {
   const HalamanMulai({super.key});
-
+  static const id = "?Mulai";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,7 +130,7 @@ class HalamanMulai extends StatelessWidget {
               height: 60,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
+                  backgroundColor: const Color(0xFF8A6BE4),
                   padding: EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.zero,

@@ -7,7 +7,7 @@ import 'package:tugas_16_api/views/dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
-
+  static const id = "/loginpage";
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -191,7 +191,7 @@ class _LoginPageState extends State<LoginPage> {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
+                  backgroundColor: const Color(0xFF8A6BE4),
                   padding: EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.zero,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tugas_16_api/views/halaman.dart';
+import 'package:tugas_16_api/widgets/botnav.dart';
 
 void main() {
   // initializeDateFormatting("id_ID");
@@ -35,12 +35,13 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      // initialRoute:login1.id,
+      // initialRoute: Day16SplashScreen.id,
       // routes: {
-      //   '/login': (context) => login1(),
+      //   '/Mulai': (context) => HalamanMulai(),
+      //   LoginPage.id: (context) => LoginPage(),
 
       //   // Tugas10.id: (context) => Tugas10(),
-      //   RegisterScreen.id: (context) => const RegisterScreen(),
+      //   // RegisterScreen.id: (context) => const RegisterScreen(),
       //   // '/Tugastes': (context) => Tugastes(),
       //   // Tugas7flutter.id: (context) => Tugas7flutter(),
       //   // Tugas8.id: (context) => Tugas8(),
@@ -50,7 +51,7 @@ class MyApp extends StatelessWidget {
       //   login1.id: (context) => const login1(),
       //   Dashboard1.id: (context) => const Dashboard1(),
       // },
-      home: HalamanMulai(),
+      home: BotnavPage(),
     );
     // Navigator.pushNamed(context, '/Tugas6');
     // return MaterialApp(

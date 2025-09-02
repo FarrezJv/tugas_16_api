@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tugas_16_api/api/brand.dart';
 import 'package:tugas_16_api/model/brand_user_model.dart';
+import 'package:tugas_16_api/utils/gambar.dart';
 
 class TambahBrand extends StatefulWidget {
   const TambahBrand({super.key});
@@ -38,11 +39,8 @@ class _TambahBrandState extends State<TambahBrand> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Tambah Brand berhasil")));
-
-      // PreferenceHandler.saveToken(user?.data.name.toString() ?? "");
       print(user?.toJson());
     } catch (e) {
-      print(e);
       setState(() {
         errorMessage = e.toString();
       });
@@ -59,77 +57,251 @@ class _TambahBrandState extends State<TambahBrand> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // title: Text("Tambah Brand"),
-        // backgroundColor: Colors.deepPurple,
-        // centerTitle: true,
-      ),
-      body: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          // gradient: LinearGradient(
-          //   colors: [Colors.deepPurple, Colors.blueAccent],
-          //   begin: Alignment.topCenter,
-          //   end: Alignment.bottomCenter,
-          // ),
-        ),
-        child: Center(
-          child: Card(
-            elevation: 8,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "Masukkan Nama Brand",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Image.asset(AppImage.logo_png, width: 150),
+                Text(
+                  "BrandNow Admin Feature.",
+                  style: TextStyle(color: Colors.grey),
+                ),
+                SizedBox(height: 20),
+                Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: FutureBuilder<List<AddBrandData>>(
+                      future: BrandAPI.getBrand(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(20),
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        } else if (snapshot.hasData) {
+                          final brands = snapshot.data!;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Center(
+                                child: Text(
+                                  "Daftar Brand",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF8A6BE4),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 12),
+                              SizedBox(
+                                height: 60,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: brands.length,
+                                  itemBuilder: (context, index) {
+                                    final dataUser = brands[index];
+                                    return GestureDetector(
+                                      onTap: () async {
+                                        await showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                            ),
+                                            title: Text("Edit Nama Brand"),
+                                            content: TextFormField(
+                                              controller: nameController
+                                                ..text = dataUser.name,
+                                              decoration: InputDecoration(
+                                                labelText: "Nama Brand",
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                              ),
+                                            ),
+                                            actions: [
+                                              OutlinedButton(
+                                                // style: ElevatedButton.styleFrom(
+                                                //   backgroundColor:
+                                                //       Colors.deepPurple,
+                                                // ),
+                                                onPressed: () async {
+                                                  setState(
+                                                    () => isLoading = true,
+                                                  );
+                                                  await BrandAPI.updateBrand(
+                                                    name: nameController.text,
+                                                    id: dataUser.id,
+                                                  );
+                                                  setState(
+                                                    () => isLoading = false,
+                                                  );
+                                                  Navigator.pop(context);
+                                                },
+                                                child: isLoading
+                                                    ? SizedBox(
+                                                        height: 18,
+                                                        width: 18,
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                              strokeWidth: 2,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                      )
+                                                    : Text("Simpan"),
+                                              ),
+                                              OutlinedButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                                child: Text("Batal"),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                        setState(() {});
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.only(right: 10),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 20,
+                                          vertical: 12,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFF8A6BE4),
+                                          borderRadius: BorderRadius.circular(
+                                            30,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black12,
+                                              blurRadius: 4,
+                                              offset: Offset(2, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            dataUser.name,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                        } else {
+                          return Text("Gagal Memuat Data Brand");
+                        }
+                      },
                     ),
                   ),
-                  SizedBox(height: 16),
-                  TextField(
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      labelText: "Nama Brand",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      prefixIcon: Icon(Icons.store_mall_directory),
-                    ),
+                ),
+                SizedBox(height: 20),
+                Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: isLoading ? null : tambahBrand,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
-                        padding: EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Tambah Brand Baru",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF8A6BE4),
+                          ),
                         ),
-                      ),
-                      child: isLoading
-                          ? CircularProgressIndicator(color: Colors.white)
-                          : Text(
-                              "Tambah Brand",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                        SizedBox(height: 16),
+                        TextField(
+                          controller: nameController,
+                          decoration: InputDecoration(
+                            labelText: "Nama Brand",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            prefixIcon: Icon(Icons.store_mall_directory),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: isLoading ? null : tambahBrand,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF8A6BE4),
+                              padding: EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: Icon(Icons.add, color: Colors.white),
+                                ),
+                                SizedBox(width: 5),
+                                Text(
+                                  "Tambah Brand",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            // icon: isLoading
+                            //     ? SizedBox(
+                            //         width: 18,
+                            //         height: 18,
+                            //         child: CircularProgressIndicator(
+                            //           strokeWidth: 2,
+                            //           color: Colors.white,
+                            //         ),
+                            //       )
+                            // : Icon(Icons.add, color: Colors.white),
+                            // label: Text(
+                            //   isLoading ? "Menyimpan..." : "Tambah Brand",
+                            //   style: TextStyle(
+                            //     fontSize: 16,
+                            //     fontWeight: FontWeight.bold,
+                            //     color: Colors.white,
+                            //   ),
+                            // ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
