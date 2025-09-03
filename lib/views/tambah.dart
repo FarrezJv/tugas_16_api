@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tugas_16_api/api/brand.dart';
 import 'package:tugas_16_api/model/brand_user_model.dart';
+import 'package:tugas_16_api/model/get_brand.dart';
 import 'package:tugas_16_api/utils/gambar.dart';
 
 class TambahBrand extends StatefulWidget {
@@ -24,9 +25,9 @@ class _TambahBrandState extends State<TambahBrand> {
 
     final name = nameController.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Nama Brand tidak boleh kosong")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("empty brand name")));
       setState(() => isLoading = false);
       return;
     }
@@ -77,7 +78,7 @@ class _TambahBrandState extends State<TambahBrand> {
                   ),
                   child: Padding(
                     padding: EdgeInsets.all(16),
-                    child: FutureBuilder<List<AddBrandData>>(
+                    child: FutureBuilder<List<GetBrandData>>(
                       future: BrandAPI.getBrand(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
@@ -95,7 +96,7 @@ class _TambahBrandState extends State<TambahBrand> {
                             children: [
                               Center(
                                 child: Text(
-                                  "Daftar Brand",
+                                  "list of brands",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -111,7 +112,7 @@ class _TambahBrandState extends State<TambahBrand> {
                                   itemCount: brands.length,
                                   itemBuilder: (context, index) {
                                     final dataUser = brands[index];
-                                    return GestureDetector(
+                                    return InkWell(
                                       onTap: () async {
                                         await showDialog(
                                           context: context,
@@ -123,7 +124,7 @@ class _TambahBrandState extends State<TambahBrand> {
                                             title: Text("Edit Nama Brand"),
                                             content: TextFormField(
                                               controller: nameController
-                                                ..text = dataUser.name,
+                                                ..text = dataUser.name ?? "",
                                               decoration: InputDecoration(
                                                 labelText: "Nama Brand",
                                                 border: OutlineInputBorder(
@@ -144,7 +145,7 @@ class _TambahBrandState extends State<TambahBrand> {
                                                   );
                                                   await BrandAPI.updateBrand(
                                                     name: nameController.text,
-                                                    id: dataUser.id,
+                                                    id: dataUser.id ?? 0,
                                                   );
                                                   setState(
                                                     () => isLoading = false,
@@ -181,7 +182,7 @@ class _TambahBrandState extends State<TambahBrand> {
                                           vertical: 12,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: Color(0xFF8A6BE4),
+                                          color: Colors.grey.shade300,
                                           borderRadius: BorderRadius.circular(
                                             30,
                                           ),
@@ -193,17 +194,42 @@ class _TambahBrandState extends State<TambahBrand> {
                                             ),
                                           ],
                                         ),
-                                        child: Center(
-                                          child: Text(
-                                            dataUser.name,
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.white,
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            if (dataUser.imageUrl != null &&
+                                                dataUser.imageUrl!.isNotEmpty)
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                child: Image.network(
+                                                  dataUser.imageUrl!,
+                                                  height: 24,
+                                                  width: 24,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              )
+                                            else
+                                              Icon(
+                                                Icons.image_not_supported,
+                                                color: Colors.black,
+                                                size: 24,
+                                              ),
+
+                                            SizedBox(width: 8),
+
+                                            Text(
+                                              dataUser.name ?? "",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.black,
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ),
                                       ),
+                                      onLongPress: () {},
                                     );
                                   },
                                 ),
@@ -228,7 +254,7 @@ class _TambahBrandState extends State<TambahBrand> {
                     child: Column(
                       children: [
                         Text(
-                          "Tambah Brand Baru",
+                          "add new brands",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -250,7 +276,9 @@ class _TambahBrandState extends State<TambahBrand> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: isLoading ? null : tambahBrand,
+                            onPressed: () {
+                              tambahBrand();
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFF8A6BE4),
                               padding: EdgeInsets.symmetric(vertical: 14),
@@ -277,24 +305,6 @@ class _TambahBrandState extends State<TambahBrand> {
                                 ),
                               ],
                             ),
-                            // icon: isLoading
-                            //     ? SizedBox(
-                            //         width: 18,
-                            //         height: 18,
-                            //         child: CircularProgressIndicator(
-                            //           strokeWidth: 2,
-                            //           color: Colors.white,
-                            //         ),
-                            //       )
-                            // : Icon(Icons.add, color: Colors.white),
-                            // label: Text(
-                            //   isLoading ? "Menyimpan..." : "Tambah Brand",
-                            //   style: TextStyle(
-                            //     fontSize: 16,
-                            //     fontWeight: FontWeight.bold,
-                            //     color: Colors.white,
-                            //   ),
-                            // ),
                           ),
                         ),
                       ],

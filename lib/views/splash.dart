@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/shared_preference/shared.dart';
 import 'package:tugas_16_api/utils/gambar.dart';
-import 'package:tugas_16_api/views/login.dart';
+import 'package:tugas_16_api/views/halaman.dart';
 import 'package:tugas_16_api/widgets/botnav.dart';
 
 class Day16SplashScreen extends StatefulWidget {
@@ -17,18 +17,21 @@ class _Day16SplashScreenState extends State<Day16SplashScreen> {
   @override
   void initState() {
     super.initState();
-    isLogin();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkLogin();
+    });
   }
 
-  void isLogin() async {
-    bool? isLogin = await PreferenceHandler.getLogin();
-
-    Future.delayed(Duration(seconds: 3)).then((value) async {
+  void checkLogin() async {
+    final isLogin = await PreferenceHandler.getLogin();
+    Future.delayed(const Duration(seconds: 3)).then((_) {
       print(isLogin);
+      if (!mounted) return;
+
       if (isLogin == true) {
         context.pushReplacementNamed(BotnavPage.id);
       } else {
-        context.push(LoginPage());
+        context.pushNamed(HalamanMulai.id);
       }
     });
   }
@@ -36,18 +39,11 @@ class _Day16SplashScreenState extends State<Day16SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          color: Colors.white,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(AppImage.logo),
-              SizedBox(height: 20),
-              // Text("Welcome"),
-            ],
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(AppImage.logo),
+            fit: BoxFit.cover,
           ),
         ),
       ),

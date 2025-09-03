@@ -28,8 +28,8 @@ class BrandAPI {
     }
   }
 
-  static Future<List<AddBrandData>> getBrand() async {
-    final url = Uri.parse(Endpoint.brand);
+  static Future<List<GetBrandData>> getBrand() async {
+    final url = Uri.parse(Endpoint.getbrand);
     final token = await PreferenceHandler.getToken();
     print(token);
     final response = await http.get(
@@ -40,13 +40,14 @@ class BrandAPI {
         "Authorization": "Bearer $token",
       },
     );
+
     print(response.body);
     print(response.statusCode);
 
     if (response.statusCode == 200) {
       final List<dynamic> userJson = json.decode(response.body)["data"];
       print(response.body);
-      return userJson.map((json) => AddBrandData.fromJson(json)).toList();
+      return userJson.map((json) => GetBrandData.fromJson(json)).toList();
     } else {
       final error = json.decode(response.body);
       throw Exception(error["message"] ?? "Register gagal");
@@ -78,6 +79,25 @@ class BrandAPI {
     final url = Uri.parse("${Endpoint.brand}/$id");
     final token = await PreferenceHandler.getToken();
     final response = await http.put(
+      url,
+      body: {"name": name},
+      headers: {"Accept": "application/json", "Authorization": "Bearer $token"},
+    );
+    if (response.statusCode == 200) {
+      return GetBrand.fromJson(json.decode(response.body));
+    } else {
+      final error = json.decode(response.body);
+      throw Exception(error["message"] ?? "Register gagal");
+    }
+  }
+
+  static Future<GetBrand> deleteBrand({
+    required String name,
+    required int id,
+  }) async {
+    final url = Uri.parse("${Endpoint.brand}/$id");
+    final token = await PreferenceHandler.getToken();
+    final response = await http.delete(
       url,
       body: {"name": name},
       headers: {"Accept": "application/json", "Authorization": "Bearer $token"},

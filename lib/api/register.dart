@@ -38,7 +38,10 @@ class AuthenticationAPI {
       headers: {"Accept": "application/json"},
     );
     if (response.statusCode == 200) {
-      return RegisterUserModel.fromJson(json.decode(response.body));
+      final data = RegisterUserModel.fromJson(json.decode(response.body));
+      await PreferenceHandler.saveToken(data.data.token);
+      await PreferenceHandler.saveLogin();
+      return data;
     } else {
       final error = json.decode(response.body);
       throw Exception(error["message"] ?? "Register gagal");

@@ -5,4 +5,5 @@ class Endpoint {
   static const String login = "$baseURL/login";
   static const String brand = "$baseURL/brands";
   static const String getbrand = "$baseURL/brands";
+  static const String products = "$baseURL/products";
 }

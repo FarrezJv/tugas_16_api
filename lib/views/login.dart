@@ -3,7 +3,7 @@ import 'package:tugas_16_api/API/register.dart';
 import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/model/register_model.dart';
 import 'package:tugas_16_api/shared_preference/shared.dart';
-import 'package:tugas_16_api/views/dashboard.dart';
+import 'package:tugas_16_api/widgets/botnav.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
       ).showSnackBar(const SnackBar(content: Text("Login berhasil")));
       PreferenceHandler.saveToken(user?.data.token.toString() ?? "");
       // Navigator.pushReplacementNamed(Dashboard1.id);
-      context.pushReplacement(DashboardPage());
+      context.pushReplacement(BotnavPage());
 
       print(user?.toJson());
     } catch (e) {

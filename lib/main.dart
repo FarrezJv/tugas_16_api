@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_16_api/views/halaman.dart';
+import 'package:tugas_16_api/views/splash.dart';
 import 'package:tugas_16_api/widgets/botnav.dart';
 
 void main() {
@@ -35,23 +37,18 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      // initialRoute: Day16SplashScreen.id,
-      // routes: {
-      //   '/Mulai': (context) => HalamanMulai(),
-      //   LoginPage.id: (context) => LoginPage(),
-
-      //   // Tugas10.id: (context) => Tugas10(),
-      //   // RegisterScreen.id: (context) => const RegisterScreen(),
-      //   // '/Tugastes': (context) => Tugastes(),
-      //   // Tugas7flutter.id: (context) => Tugas7flutter(),
-      //   // Tugas8.id: (context) => Tugas8(),
-      // },
+      initialRoute: Day16SplashScreen.id,
+      routes: {
+        Day16SplashScreen.id: (context) => Day16SplashScreen(),
+        HalamanMulai.id: (context) => HalamanMulai(),
+        BotnavPage.id: (context) => BotnavPage(),
+      },
       // initialRoute: login1.id,
       // routes: {
       //   login1.id: (context) => const login1(),
       //   Dashboard1.id: (context) => const Dashboard1(),
       // },
-      home: BotnavPage(),
+      // home: DashboardScreen(),
     );
     // Navigator.pushNamed(context, '/Tugas6');
     // return MaterialApp(

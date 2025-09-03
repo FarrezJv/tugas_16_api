@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:tugas_16_api/api/brand.dart';
-import 'package:tugas_16_api/model/brand_user_model.dart';
+import 'package:tugas_16_api/api/produk.dart';
+import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/model/get_brand.dart';
+import 'package:tugas_16_api/model/products/tampil_produk.dart';
 import 'package:tugas_16_api/utils/gambar.dart';
+import 'package:tugas_16_api/utils/rupiah.dart';
+import 'package:tugas_16_api/views/detail1.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -12,6 +16,14 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  @override
+  void initState() {
+    super.initState();
+    // futureBrand = BrandAPI.getBrand();
+    futureProduct = AuthenticationApiProduct.getProduct();
+  }
+
+  late Future<GetProdukModel> futureProduct;
   final TextEditingController nameController = TextEditingController();
   GetBrand? userData;
   bool isLoading = true;
@@ -85,12 +97,12 @@ class _DashboardPageState extends State<DashboardPage> {
                 Row(
                   children: [
                     Expanded(
-                      child: FutureBuilder<List<AddBrandData>>(
+                      child: FutureBuilder<List<GetBrandData>>(
                         future: BrandAPI.getBrand(),
                         builder:
                             (
                               BuildContext context,
-                              AsyncSnapshot<List<AddBrandData>> snapshot,
+                              AsyncSnapshot<List<GetBrandData>> snapshot,
                             ) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
@@ -110,21 +122,21 @@ class _DashboardPageState extends State<DashboardPage> {
                                   child: ListView.builder(
                                     scrollDirection: Axis.horizontal,
                                     itemCount: brands.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                          final dataUser = brands[index];
-                                          return GestureDetector(
+                                    itemBuilder: (BuildContext context, int index) {
+                                      final dataUser = brands[index];
+                                      return Column(
+                                        children: [
+                                          GestureDetector(
                                             child: Container(
-                                              margin: const EdgeInsets.only(
-                                                right: 12,
+                                              margin: EdgeInsets.only(
+                                                right: 10,
                                               ),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 20,
-                                                    vertical: 12,
-                                                  ),
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 20,
+                                                vertical: 12,
+                                              ),
                                               decoration: BoxDecoration(
-                                                color: const Color(0xFF8A6BE4),
+                                                color: Colors.grey.shade300,
                                                 borderRadius:
                                                     BorderRadius.circular(30),
                                                 boxShadow: [
@@ -135,19 +147,51 @@ class _DashboardPageState extends State<DashboardPage> {
                                                   ),
                                                 ],
                                               ),
-                                              child: Center(
-                                                child: Text(
-                                                  dataUser.name,
-                                                  style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.white,
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  if (dataUser.imageUrl !=
+                                                          null &&
+                                                      dataUser
+                                                          .imageUrl!
+                                                          .isNotEmpty)
+                                                    ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            20,
+                                                          ),
+                                                      child: Image.network(
+                                                        dataUser.imageUrl!,
+                                                        height: 24,
+                                                        width: 24,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    )
+                                                  else
+                                                    Icon(
+                                                      Icons.image_not_supported,
+                                                      color: Colors.black,
+                                                      size: 24,
+                                                    ),
+
+                                                  SizedBox(width: 8),
+
+                                                  Text(
+                                                    dataUser.name ?? "",
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: Colors.black,
+                                                    ),
                                                   ),
-                                                ),
+                                                ],
                                               ),
                                             ),
-                                          );
-                                        },
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   ),
                                 );
                               } else {
@@ -172,6 +216,120 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                     Text("View All", style: TextStyle(color: Colors.grey)),
                   ],
+                ),
+                SizedBox(height: 20),
+                FutureBuilder<GetProdukModel>(
+                  future: futureProduct,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Text("Error: ${snapshot.error}");
+                    } else if (!snapshot.hasData ||
+                        snapshot.data!.data.isEmpty) {
+                      return const Text("No Products found");
+                    }
+
+                    final products = snapshot.data!.data;
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: products.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 0.65,
+                          ),
+                      itemBuilder: (context, index) {
+                        final p = products[index];
+                        return GestureDetector(
+                          onTap: () {
+                            context.push(ProductDetailPage(product: p));
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(16),
+                                      ),
+                                      child: p.imageUrls.isNotEmpty
+                                          ? Image.network(
+                                              p.imageUrls[0],
+                                              height: 150,
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Container(
+                                              height: 150,
+                                              color: Colors.grey[200],
+                                              child: const Icon(
+                                                Icons.image,
+                                                size: 50,
+                                              ),
+                                            ),
+                                    ),
+                                    Positioned(
+                                      top: 8,
+                                      right: 8,
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.white
+                                            .withOpacity(0.8),
+                                        child: const Icon(
+                                          Icons.favorite_border,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    p.name,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
+                                  child: Text(
+                                    formatRupiah(p.price),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
 
                 // GridView.builder(
