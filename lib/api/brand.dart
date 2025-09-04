@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:tugas_16_api/API/endpoint/endpoint.dart';
@@ -104,6 +105,36 @@ class BrandAPI {
     );
     if (response.statusCode == 200) {
       return GetBrand.fromJson(json.decode(response.body));
+    } else {
+      final error = json.decode(response.body);
+      throw Exception(error["message"] ?? "Register gagal");
+    }
+  }
+
+  static Future<GetBrandData> postFotoBrand({
+    required String name,
+    required File image,
+  }) async {
+    final url = Uri.parse(Endpoint.brand);
+    final token = await PreferenceHandler.getToken();
+    final readImage = image.readAsBytesSync();
+    final b64 = base64Encode(readImage);
+    final response = await http.post(
+      url,
+      body: {"name": name, "image_base64": b64},
+      headers: {
+        "Accept": "application/json",
+        // "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+    print(image);
+    print(readImage);
+    print(b64);
+    print(response.statusCode);
+    print(response.body);
+    if (response.statusCode == 200) {
+      return GetBrandData.fromJson(json.decode(response.body)["data"]);
     } else {
       final error = json.decode(response.body);
       throw Exception(error["message"] ?? "Register gagal");

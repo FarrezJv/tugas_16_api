@@ -285,42 +285,87 @@ class _DashboardPageState extends State<DashboardPage> {
                                               ),
                                             ),
                                     ),
-                                    Positioned(
-                                      top: 8,
-                                      right: 8,
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.white
-                                            .withOpacity(0.8),
-                                        child: const Icon(
-                                          Icons.favorite_border,
-                                          color: Colors.black,
+
+                                    if (p.discount.isNotEmpty)
+                                      Positioned(
+                                        bottom: 8,
+                                        left: 8,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            "-${p.discount}%",
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
                                   ],
                                 ),
+
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    p.name,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                  ),
-                                  child: Text(
-                                    formatRupiah(p.price),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        p.name,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+
+                                      if (p.discount.isNotEmpty) ...[
+                                        Text(
+                                          formatRupiah(p.price),
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                            decoration:
+                                                TextDecoration.lineThrough,
+                                          ),
+                                        ),
+                                        Text(
+                                          formatRupiah(
+                                            (int.parse(p.price) *
+                                                    (100 -
+                                                        int.parse(
+                                                          p.discount,
+                                                        )) ~/
+                                                    100)
+                                                .toString(),
+                                          ),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                      ] else
+                                        Text(
+                                          formatRupiah(p.price),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 ),
                               ],

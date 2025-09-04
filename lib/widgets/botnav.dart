@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_16_api/views/category.dart';
 import 'package:tugas_16_api/views/dashboard.dart';
 import 'package:tugas_16_api/views/tambah.dart';
 
@@ -15,6 +16,7 @@ class _BotnavPageState extends State<BotnavPage> {
   static const List<Widget> _widgetOptions = <Widget>[
     DashboardPage(),
     TambahBrand(),
+    CategoryTab(),
   ];
 
   @override
@@ -25,8 +27,12 @@ class _BotnavPageState extends State<BotnavPage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.info_outline),
+            icon: Icon(Icons.admin_panel_settings),
             label: 'Admin Feature',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.category),
+            label: 'Categories',
           ),
           // BottomNavigationBarItem(
           //   icon: Icon(Icons.sign_language),
@@ -34,7 +40,7 @@ class _BotnavPageState extends State<BotnavPage> {
           // ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Color(0xFF8A6BE4),
         unselectedItemColor: Colors.black,
         onTap: (value) {
           setState(() {

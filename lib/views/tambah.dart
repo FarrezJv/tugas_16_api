@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tugas_16_api/api/brand.dart';
+import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/model/brand_user_model.dart';
 import 'package:tugas_16_api/model/get_brand.dart';
 import 'package:tugas_16_api/utils/gambar.dart';
+import 'package:tugas_16_api/views/adminproducts.dart';
 
 class TambahBrand extends StatefulWidget {
   const TambahBrand({super.key});
@@ -12,6 +17,28 @@ class TambahBrand extends StatefulWidget {
 }
 
 class _TambahBrandState extends State<TambahBrand> {
+  final ImagePicker _picker = ImagePicker();
+  XFile? pickedFile;
+  pickFoto() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    print(image);
+    print(image?.path);
+    setState(() {
+      pickedFile = image;
+    });
+    if (image == null) {
+      return;
+    } else {
+      final response = await BrandAPI.postFotoBrand(
+        name: "ACAK",
+        image: File(image.path),
+      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Berhasil upload gambar")));
+    }
+  }
+
   final TextEditingController nameController = TextEditingController();
   bool isLoading = false;
   AddBrand? user;
@@ -58,6 +85,14 @@ class _TambahBrandState extends State<TambahBrand> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.pushReplacement(Adminproducts());
+        },
+        backgroundColor: Color(0xFF8A6BE4),
+
+        child: Icon(Icons.inventory_2, color: Colors.white),
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16),
@@ -114,6 +149,7 @@ class _TambahBrandState extends State<TambahBrand> {
                                     final dataUser = brands[index];
                                     return InkWell(
                                       onTap: () async {
+                                        setState(() => isLoading = false);
                                         await showDialog(
                                           context: context,
                                           builder: (context) => AlertDialog(
@@ -140,17 +176,19 @@ class _TambahBrandState extends State<TambahBrand> {
                                                 //       Colors.deepPurple,
                                                 // ),
                                                 onPressed: () async {
-                                                  setState(
-                                                    () => isLoading = true,
-                                                  );
+                                                  // setState(
+                                                  //   () => isLoading = true,
+                                                  // );
+                                                  Navigator.of(context).pop();
+
                                                   await BrandAPI.updateBrand(
                                                     name: nameController.text,
                                                     id: dataUser.id ?? 0,
-                                                  );
+                                                  ).then((value) {});
+
                                                   setState(
                                                     () => isLoading = false,
                                                   );
-                                                  Navigator.pop(context);
                                                 },
                                                 child: isLoading
                                                     ? SizedBox(
@@ -229,7 +267,65 @@ class _TambahBrandState extends State<TambahBrand> {
                                           ],
                                         ),
                                       ),
-                                      onLongPress: () {},
+                                      onLongPress: () async {
+                                        await showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                            ),
+                                            title: Text("Hapus Brand"),
+                                            content: Text(
+                                              "Apakah kamu yakin ingin menghapus '${dataUser.name}'?",
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                                child: Text("Batal"),
+                                              ),
+                                              TextButton(
+                                                onPressed: () async {
+                                                  Navigator.pop(context);
+                                                  try {
+                                                    await BrandAPI.deleteBrand(
+                                                      name: dataUser.name ?? "",
+                                                      id: dataUser.id ?? 0,
+                                                    );
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                          "Brand '${dataUser.name}' berhasil dihapus",
+                                                        ),
+                                                      ),
+                                                    );
+                                                    setState(() {});
+                                                  } catch (e) {
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                          "Gagal hapus brand: $e",
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                                child: Text(
+                                                  "Hapus",
+                                                  style: TextStyle(
+                                                    color: Colors.red,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
                                     );
                                   },
                                 ),
@@ -310,6 +406,33 @@ class _TambahBrandState extends State<TambahBrand> {
                       ],
                     ),
                   ),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    pickedFile != null
+                        ? Image.file(File(pickedFile?.path ?? ""))
+                        : Container(
+                            decoration: BoxDecoration(
+                              // shape: BoxShape.circle,
+                              color: Colors.red,
+                            ),
+                            height: 200,
+                            width: 200,
+
+                            child: Text("Gambar belum di upload"),
+                          ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: pickFoto,
+                          child: Text("Ambil Foto"),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ],
             ),
