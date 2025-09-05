@@ -6,6 +6,7 @@ import 'package:tugas_16_api/api/endpoint/endpoint.dart';
 import 'package:tugas_16_api/model/category/add_categories.dart';
 import 'package:tugas_16_api/model/category/categories_model.dart';
 import 'package:tugas_16_api/model/category/get_categories.dart';
+import 'package:tugas_16_api/model/products/delete_model.dart';
 import 'package:tugas_16_api/shared_preference/shared.dart';
 
 class AuthenticationApiCat {
@@ -58,26 +59,19 @@ class AuthenticationApiCat {
     }
   }
 
-  static Future<CategoryResponse> postCategory({
+  static Future<DeleteModel> deleteCategory({
     required String name,
-    required File image,
+    required int id,
   }) async {
-    final url = Uri.parse(Endpoint.categories);
+    final url = Uri.parse("${Endpoint.categories}/$id");
     final token = await PreferenceHandler.getToken();
-    final readImage = image.readAsBytesSync();
-    final b64 = base64Encode(readImage);
-    final response = await http.post(
+    final response = await http.delete(
       url,
-      body: {"name": name, "image": b64},
-      headers: {"Accept": "application/json", "Authorization": token},
+      body: {"name": name},
+      headers: {"Accept": "application/json", "Authorization": "Bearer $token"},
     );
-    print(image);
-    print(readImage);
-    print(b64);
-    print(response.statusCode);
-    print(response.body);
     if (response.statusCode == 200) {
-      return CategoryResponse.fromJson(json.decode(response.body));
+      return DeleteModel.fromJson(json.decode(response.body));
     } else {
       final error = json.decode(response.body);
       throw Exception(error["message"] ?? "Register gagal");

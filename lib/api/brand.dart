@@ -76,6 +76,7 @@ class BrandAPI {
   static Future<GetBrand> updateBrand({
     required String name,
     required int id,
+    File? image,
   }) async {
     final url = Uri.parse("${Endpoint.brand}/$id");
     final token = await PreferenceHandler.getToken();

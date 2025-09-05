@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tugas_16_api/api/category.dart';
+import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/model/category/get_categories.dart';
-import 'package:tugas_16_api/utils/gambar.dart'; // supaya bisa akses AppImage.logo_png
+import 'package:tugas_16_api/utils/gambar.dart';
+import 'package:tugas_16_api/views/detailcategory.dart';
 
 class CategoryTab extends StatefulWidget {
   const CategoryTab({super.key});
@@ -19,6 +21,48 @@ class _CategoryTabState extends State<CategoryTab> {
     futureCategory = AuthenticationApiCat.getCategories();
   }
 
+  Future<void> _refreshCategories() async {
+    setState(() {
+      futureCategory = AuthenticationApiCat.getCategories();
+    });
+  }
+
+  Future<void> _deleteCategory(int id, String name) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Hapus Kategori"),
+        content: Text("Yakin mau hapus kategori $name?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Batal"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Hapus", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await AuthenticationApiCat.deleteCategory(id: id, name: name);
+
+        _refreshCategories();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Kategori $name berhasil dihapus")),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Gagal hapus kategori: $e")));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +78,6 @@ class _CategoryTabState extends State<CategoryTab> {
                 Image.asset(AppImage.logo_png, width: 150),
 
                 const SizedBox(height: 8),
-                // teks deskripsi
                 const Text(
                   "Category Section.",
                   style: TextStyle(color: Colors.grey),
@@ -42,7 +85,6 @@ class _CategoryTabState extends State<CategoryTab> {
 
                 const SizedBox(height: 20),
 
-                // card berisi categories
                 Card(
                   elevation: 5,
                   shape: RoundedRectangleBorder(
@@ -86,7 +128,12 @@ class _CategoryTabState extends State<CategoryTab> {
                             final cat = categories[index];
                             return GestureDetector(
                               onTap: () {
-                                // TODO: navigate ke produk kategori
+                                context.push(
+                                  ProductByCategoryPage(
+                                    categoryId: cat.id,
+                                    categoryName: cat.name,
+                                  ),
+                                );
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -100,21 +147,49 @@ class _CategoryTabState extends State<CategoryTab> {
                                     ),
                                   ],
                                 ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                child: Stack(
                                   children: [
-                                    Icon(
-                                      Icons.category,
-                                      size: 40,
-                                      color: Color(0xFF8A6BE4),
+                                    // isi kategori
+                                    Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(
+                                            Icons.category,
+                                            size: 40,
+                                            color: Color(0xFF8A6BE4),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Text(
+                                            cat.name,
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      cat.name,
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600,
+
+                                    // tombol delete
+                                    Positioned(
+                                      top: 8,
+                                      right: 8,
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        radius: 16,
+                                        child: IconButton(
+                                          padding: EdgeInsets.zero,
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            size: 18,
+                                            color: Colors.red,
+                                          ),
+                                          onPressed: () =>
+                                              _deleteCategory(cat.id, cat.name),
+                                        ),
                                       ),
                                     ),
                                   ],

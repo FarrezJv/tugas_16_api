@@ -11,19 +11,19 @@ String addProdukModelToJson(AddProdukModel data) => json.encode(data.toJson());
 
 class AddProdukModel {
   String message;
-  Data data;
+  GetProducts data;
 
   AddProdukModel({required this.message, required this.data});
 
   factory AddProdukModel.fromJson(Map<String, dynamic> json) => AddProdukModel(
     message: json["message"],
-    data: Data.fromJson(json["data"]),
+    data: GetProducts.fromJson(json["data"]),
   );
 
   Map<String, dynamic> toJson() => {"message": message, "data": data.toJson()};
 }
 
-class Data {
+class GetProducts {
   int id;
   String name;
   String description;
@@ -37,7 +37,7 @@ class Data {
   List<String> imageUrls;
   List<String> imagePaths;
 
-  Data({
+  GetProducts({
     required this.id,
     required this.name,
     required this.description,
@@ -52,7 +52,7 @@ class Data {
     required this.imagePaths,
   });
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
+  factory GetProducts.fromJson(Map<String, dynamic> json) => GetProducts(
     id: json["id"],
     name: json["name"],
     description: json["description"],

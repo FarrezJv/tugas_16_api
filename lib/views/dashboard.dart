@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tugas_16_api/api/brand.dart';
+import 'package:tugas_16_api/api/category.dart';
 import 'package:tugas_16_api/api/produk.dart';
 import 'package:tugas_16_api/extension/navigation.dart';
+import 'package:tugas_16_api/model/category/get_categories.dart';
 import 'package:tugas_16_api/model/get_brand.dart';
 import 'package:tugas_16_api/model/products/tampil_produk.dart';
 import 'package:tugas_16_api/utils/gambar.dart';
@@ -16,18 +18,18 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  @override
-  void initState() {
-    super.initState();
-    // futureBrand = BrandAPI.getBrand();
-    futureProduct = AuthenticationApiProduct.getProduct();
-  }
-
+  late Future<GetCatModel> futureCategory;
   late Future<GetProdukModel> futureProduct;
   final TextEditingController nameController = TextEditingController();
   GetBrand? userData;
   bool isLoading = true;
   String errorMessage = '';
+  @override
+  void initState() {
+    super.initState();
+    futureProduct = AuthenticationApiProduct.getProduct();
+    futureCategory = AuthenticationApiCat.getCategories();
+  }
 
   @override
   Widget build(BuildContext context) {

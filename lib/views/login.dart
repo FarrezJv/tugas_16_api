@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
 
   RegisterUserModel? user;
   String? errorMessage;
-  @override
+
   void loginUser() async {
     setState(() {
       isLoading = true;
@@ -76,6 +76,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Column(
           children: [
