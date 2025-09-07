@@ -5,8 +5,11 @@ import 'package:tugas_16_api/api/brand.dart';
 import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/model/brand_user_model.dart';
 import 'package:tugas_16_api/model/get_brand.dart';
+import 'package:tugas_16_api/shared_preference/shared.dart';
 import 'package:tugas_16_api/utils/gambar.dart';
 import 'package:tugas_16_api/views/adminproducts.dart';
+import 'package:tugas_16_api/views/category.dart';
+import 'package:tugas_16_api/views/halaman.dart';
 
 class TambahBrand extends StatefulWidget {
   const TambahBrand({super.key});
@@ -61,7 +64,7 @@ class _TambahBrandState extends State<TambahBrand> {
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text("Tambah Brand berhasil")));
+      ).showSnackBar(const SnackBar(content: Text("Add Brand Successfully")));
 
       nameController.clear();
       setState(() {
@@ -138,8 +141,7 @@ class _TambahBrandState extends State<TambahBrand> {
                                   File(pickedFile!.path),
                                   height: 150,
                                   width: double.infinity,
-                                  fit: BoxFit
-                                      .contain, // ✅ agar gambar tidak crop
+                                  fit: BoxFit.contain,
                                 ),
                               )
                             : Container(
@@ -185,7 +187,7 @@ class _TambahBrandState extends State<TambahBrand> {
                                         ),
                                       )
                                     : const Text(
-                                        "Tambah Brand",
+                                        "Add Brand",
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
@@ -359,7 +361,7 @@ class _TambahBrandState extends State<TambahBrand> {
                                             dataUser.imageUrl!,
                                             height: 40,
                                             width: 40,
-                                            fit: BoxFit.contain, // ✅ tidak crop
+                                            fit: BoxFit.contain,
                                           ),
                                         )
                                       else
@@ -388,6 +390,98 @@ class _TambahBrandState extends State<TambahBrand> {
                           return const Text("Gagal Memuat Data Brand");
                         }
                       },
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                /// Grid Admin Features
+                Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Admin Other Features",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF8A6BE4),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        GridView.count(
+                          crossAxisCount: 2,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 16,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                context.push(CategoryTab());
+                              },
+                              borderRadius: BorderRadius.circular(16),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  color: Colors.grey.shade200,
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Icon(
+                                      Icons.category,
+                                      size: 48,
+                                      color: Color(0xFF8A6BE4),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      "Categories",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF8A6BE4),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      PreferenceHandler.removeUserId();
+                      PreferenceHandler.removeToken();
+                      PreferenceHandler.removeLogin();
+                      context.pushReplacement(HalamanMulai());
+                    },
+                    child: Text(
+                      "LOG OUT",
+                      style: TextStyle(
+                        fontFamily: "Poppins",
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ),

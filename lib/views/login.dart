@@ -54,6 +54,8 @@ class _LoginPageState extends State<LoginPage> {
         context,
       ).showSnackBar(const SnackBar(content: Text("Login berhasil")));
       PreferenceHandler.saveToken(user?.data.token.toString() ?? "");
+      final savedUserId = await PreferenceHandler.getUserId();
+      print("Saved User Id: $savedUserId");
       // Navigator.pushReplacementNamed(Dashboard1.id);
       context.pushReplacement(BotnavPage());
 

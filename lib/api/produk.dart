@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:tugas_16_api/api/endpoint/endpoint.dart';
-import 'package:tugas_16_api/model/products/delete_model.dart';
+import 'package:tugas_16_api/model/delete_model.dart';
 import 'package:tugas_16_api/model/products/tambah_produk.dart';
 import 'package:tugas_16_api/model/products/tampil_produk.dart';
 import 'package:tugas_16_api/shared_preference/shared.dart';

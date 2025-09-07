@@ -7,14 +7,14 @@ import 'package:tugas_16_api/utils/gambar.dart';
 import 'package:tugas_16_api/views/detailcategory.dart';
 import 'package:tugas_16_api/views/halaman.dart';
 
-class CategoryTab extends StatefulWidget {
-  const CategoryTab({super.key});
+class AdminCategory extends StatefulWidget {
+  const AdminCategory({super.key});
 
   @override
-  State<CategoryTab> createState() => _CategoryTabState();
+  State<AdminCategory> createState() => _AdminCategoryState();
 }
 
-class _CategoryTabState extends State<CategoryTab> {
+class _AdminCategoryState extends State<AdminCategory> {
   late Future<GetCatModel> futureCategory;
 
   @override
@@ -176,24 +176,24 @@ class _CategoryTabState extends State<CategoryTab> {
                                     ),
 
                                     // tombol delete
-                                    Positioned(
-                                      top: 8,
-                                      right: 8,
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        radius: 16,
-                                        child: IconButton(
-                                          padding: EdgeInsets.zero,
-                                          icon: const Icon(
-                                            Icons.delete,
-                                            size: 18,
-                                            color: Colors.red,
-                                          ),
-                                          onPressed: () =>
-                                              _deleteCategory(cat.id, cat.name),
-                                        ),
-                                      ),
-                                    ),
+                                    // Positioned(
+                                    //   top: 8,
+                                    //   right: 8,
+                                    //   child: CircleAvatar(
+                                    //     backgroundColor: Colors.white,
+                                    //     radius: 16,
+                                    //     child: IconButton(
+                                    //       padding: EdgeInsets.zero,
+                                    //       icon: const Icon(
+                                    //         Icons.delete,
+                                    //         size: 18,
+                                    //         color: Colors.red,
+                                    //       ),
+                                    //       onPressed: () =>
+                                    //           _deleteCategory(cat.id, cat.name),
+                                    //     ),
+                                    //   ),
+                                    // ),
                                   ],
                                 ),
                               ),

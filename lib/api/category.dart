@@ -6,7 +6,7 @@ import 'package:tugas_16_api/api/endpoint/endpoint.dart';
 import 'package:tugas_16_api/model/category/add_categories.dart';
 import 'package:tugas_16_api/model/category/categories_model.dart';
 import 'package:tugas_16_api/model/category/get_categories.dart';
-import 'package:tugas_16_api/model/products/delete_model.dart';
+import 'package:tugas_16_api/model/delete_model.dart';
 import 'package:tugas_16_api/shared_preference/shared.dart';
 
 class AuthenticationApiCat {

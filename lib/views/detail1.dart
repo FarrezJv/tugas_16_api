@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_16_api/api/keranjang.dart';
+import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/model/products/tampil_produk.dart';
 import 'package:tugas_16_api/utils/rupiah.dart';
+import 'package:tugas_16_api/views/halaman_keranjang.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final Detail product;
@@ -72,7 +75,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         Icons.shopping_cart_outlined,
                         color: Colors.black,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        context.push(CartPage2());
+                      },
                     ),
                   ),
                 ),
@@ -309,7 +314,27 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () async {
+                        try {
+                          final result = await AuthenticationApiCart.addCart(
+                            productId: widget.product.id,
+                            quantity: quantity,
+                          );
+
+                          // await fetchCartCount();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(result.message)),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                "Gagal menambahkan ke keranjang: $e",
+                              ),
+                            ),
+                          );
+                        }
+                      },
                       child: const Text(
                         "Add to Cart",
                         style: TextStyle(

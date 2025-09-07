@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tugas_16_api/views/admin_category.dart';
 import 'package:tugas_16_api/views/category.dart';
 import 'package:tugas_16_api/views/dashboard.dart';
 import 'package:tugas_16_api/views/tambah.dart';
@@ -16,7 +17,7 @@ class _BotnavPageState extends State<BotnavPage> {
   static const List<Widget> _widgetOptions = <Widget>[
     DashboardPage(),
     TambahBrand(),
-    CategoryTab(),
+    AdminCategory(),
   ];
 
   @override
