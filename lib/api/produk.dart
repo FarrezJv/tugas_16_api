@@ -17,10 +17,13 @@ class AuthenticationApiProduct {
     required int brandId,
     required int categoryId,
     required int discount,
-    required List<String> images,
+    required File images,
+    // required List<String> images,
   }) async {
     final url = Uri.parse(Endpoint.products);
     final token = await PreferenceHandler.getToken();
+    final readImage = images.readAsBytesSync();
+    final b64 = base64Encode(readImage);
     final response = await http.post(
       url,
       body: jsonEncode({
@@ -31,6 +34,7 @@ class AuthenticationApiProduct {
         "brand_id": brandId,
         "category_id": categoryId,
         "discount": discount,
+        "image_base64": b64,
         "images": images,
       }),
       headers: {
@@ -97,33 +101,33 @@ class AuthenticationApiProduct {
     }
   }
 
-  static Future<GetProdukModel> postFotoProduct({
-    required String name,
-    required File image,
-  }) async {
-    final url = Uri.parse(Endpoint.products);
-    final token = await PreferenceHandler.getToken();
-    final readImage = image.readAsBytesSync();
-    final b64 = base64Encode(readImage);
-    final response = await http.post(
-      url,
-      body: {"name": name, "image_base64": b64},
-      headers: {
-        "Accept": "application/json",
-        // "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
-      },
-    );
-    print(image);
-    print(readImage);
-    print(b64);
-    print(response.statusCode);
-    print(response.body);
-    if (response.statusCode == 200) {
-      return GetProdukModel.fromJson(json.decode(response.body)["data"]);
-    } else {
-      final error = json.decode(response.body);
-      throw Exception(error["message"] ?? "Register gagal");
-    }
-  }
+  // static Future<GetProdukModel> postFotoProduct({
+  //   required String name,
+  //   required File image,
+  // }) async {
+  //   final url = Uri.parse(Endpoint.products);
+  //   final token = await PreferenceHandler.getToken();
+  //   final readImage = image.readAsBytesSync();
+  //   final b64 = base64Encode(readImage);
+  //   final response = await http.post(
+  //     url,
+  //     body: {"name": name, "image_base64": b64},
+  //     headers: {
+  //       "Accept": "application/json",
+  //       // "Content-Type": "application/json",
+  //       "Authorization": "Bearer $token",
+  //     },
+  //   );
+  //   print(image);
+  //   print(readImage);
+  //   print(b64);
+  //   print(response.statusCode);
+  //   print(response.body);
+  //   if (response.statusCode == 200) {
+  //     return GetProdukModel.fromJson(json.decode(response.body)["data"]);
+  //   } else {
+  //     final error = json.decode(response.body);
+  //     throw Exception(error["message"] ?? "Register gagal");
+  //   }
+  // }
 }

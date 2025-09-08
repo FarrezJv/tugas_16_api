@@ -34,17 +34,17 @@ class _AdminProductState extends State<AdminProduct> {
     setState(() {
       pickedFile = image;
     });
-    if (image == null) {
-      return;
-    } else {
-      final response = await AuthenticationApiProduct.postFotoProduct(
-        name: "ACAK",
-        image: File(image.path),
-      );
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Berhasil upload gambar")));
-    }
+    // if (image == null) {
+    //   return;
+    // } else {
+    //   final response = await AuthenticationApiProduct.postFotoProduct(
+    //     name: "ACAK",
+    //     image: File(image.path),
+    //   );
+    //   ScaffoldMessenger.of(
+    //     context,
+    //   ).showSnackBar(const SnackBar(content: Text("Berhasil upload gambar")));
+    // }
   }
 
   Future<void> addProduct() async {
@@ -78,7 +78,8 @@ class _AdminProductState extends State<AdminProduct> {
         price: price,
         stock: stock,
         discount: discount,
-        images: pickedFile != null ? [pickedFile!.path] : [],
+        images: pickedFile != null ? File(pickedFile!.path) : File(''),
+        // images: pickedFile != null ? [pickedFile!.path] : [],
       );
       setState(() {
         product = result;

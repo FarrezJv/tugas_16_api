@@ -3,31 +3,30 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:tugas_16_api/API/endpoint/endpoint.dart';
-import 'package:tugas_16_api/model/brand/brand_user_model.dart';
 import 'package:tugas_16_api/model/brand/get_brand.dart';
 import 'package:tugas_16_api/shared_preference/shared.dart';
 
 class BrandAPI {
-  static Future<AddBrand> tambahBrand({required String name}) async {
-    final url = Uri.parse(Endpoint.brand);
-    final token = await PreferenceHandler.getToken();
+  // static Future<AddBrand> tambahBrand({required String name}) async {
+  //   final url = Uri.parse(Endpoint.brand);
+  //   final token = await PreferenceHandler.getToken();
 
-    final response = await http.post(
-      url,
-      body: {"name": name},
-      headers: {
-        "Accept": "application/json",
-        // "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
-      },
-    );
-    if (response.statusCode == 200) {
-      return AddBrand.fromJson(json.decode(response.body));
-    } else {
-      final error = json.decode(response.body);
-      throw Exception(error["message"] ?? "Tambah Brand gagal");
-    }
-  }
+  //   final response = await http.post(
+  //     url,
+  //     body: {"name": name},
+  //     headers: {
+  //       "Accept": "application/json",
+  //       // "Content-Type": "application/json",
+  //       "Authorization": "Bearer $token",
+  //     },
+  //   );
+  //   if (response.statusCode == 200) {
+  //     return AddBrand.fromJson(json.decode(response.body));
+  //   } else {
+  //     final error = json.decode(response.body);
+  //     throw Exception(error["message"] ?? "Tambah Brand gagal");
+  //   }
+  // }
 
   static Future<List<GetBrandData>> getBrand() async {
     final url = Uri.parse(Endpoint.getbrand);
