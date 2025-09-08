@@ -1,15 +1,17 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tugas_16_api/api/brand.dart';
 import 'package:tugas_16_api/extension/navigation.dart';
-import 'package:tugas_16_api/model/brand_user_model.dart';
-import 'package:tugas_16_api/model/get_brand.dart';
+import 'package:tugas_16_api/model/brand/brand_user_model.dart';
+import 'package:tugas_16_api/model/brand/get_brand.dart';
 import 'package:tugas_16_api/shared_preference/shared.dart';
 import 'package:tugas_16_api/utils/gambar.dart';
 import 'package:tugas_16_api/views/adminproducts.dart';
-import 'package:tugas_16_api/views/category.dart';
+import 'package:tugas_16_api/views/category.dart' hide Card;
 import 'package:tugas_16_api/views/halaman.dart';
+import 'package:tugas_16_api/views/tambah_produk.dart';
 
 class TambahBrand extends StatefulWidget {
   const TambahBrand({super.key});
@@ -27,7 +29,20 @@ class _TambahBrandState extends State<TambahBrand> {
   AddBrand? user;
   String? errorMessage;
 
-  // ambil foto
+  late Future<List<GetBrandData>> _futureBrand;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureBrand = BrandAPI.getBrand();
+  }
+
+  void _refreshBrand() {
+    setState(() {
+      _futureBrand = BrandAPI.getBrand();
+    });
+  }
+
   Future<void> pickFoto() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     setState(() {
@@ -44,17 +59,17 @@ class _TambahBrandState extends State<TambahBrand> {
 
     final name = nameController.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Nama brand tidak boleh kosong")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Brand Name not found")));
       setState(() => isLoading = false);
       return;
     }
 
     if (pickedFile == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Foto brand belum dipilih")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Brand photo has not been selected")),
+      );
       setState(() => isLoading = false);
       return;
     }
@@ -70,6 +85,7 @@ class _TambahBrandState extends State<TambahBrand> {
       setState(() {
         pickedFile = null;
       });
+      _refreshBrand(); // refresh setelah tambah
     } catch (e) {
       setState(() => errorMessage = e.toString());
       ScaffoldMessenger.of(
@@ -83,6 +99,7 @@ class _TambahBrandState extends State<TambahBrand> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.pushReplacement(Adminproducts());
@@ -126,7 +143,7 @@ class _TambahBrandState extends State<TambahBrand> {
                         TextField(
                           controller: nameController,
                           decoration: InputDecoration(
-                            labelText: "Nama Brand",
+                            labelText: "Name Brand",
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -152,7 +169,7 @@ class _TambahBrandState extends State<TambahBrand> {
                                   color: Colors.grey.shade200,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: const Text("Belum ada foto dipilih"),
+                                child: const Text("No photos selected"),
                               ),
                         const SizedBox(height: 16),
                         Row(
@@ -161,7 +178,7 @@ class _TambahBrandState extends State<TambahBrand> {
                               child: OutlinedButton.icon(
                                 onPressed: pickFoto,
                                 icon: const Icon(Icons.image),
-                                label: const Text("Pilih Foto"),
+                                label: const Text("Select Photo"),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -213,7 +230,7 @@ class _TambahBrandState extends State<TambahBrand> {
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: FutureBuilder<List<GetBrandData>>(
-                      future: BrandAPI.getBrand(),
+                      future: _futureBrand,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -229,7 +246,6 @@ class _TambahBrandState extends State<TambahBrand> {
                             children: brands.map((dataUser) {
                               return InkWell(
                                 onTap: () async {
-                                  setState(() => isLoading = false);
                                   await showDialog(
                                     context: context,
                                     builder: (context) => AlertDialog(
@@ -253,25 +269,22 @@ class _TambahBrandState extends State<TambahBrand> {
                                         OutlinedButton(
                                           onPressed: () async {
                                             Navigator.of(context).pop();
-
                                             await BrandAPI.updateBrand(
                                               name: nameController.text,
                                               id: dataUser.id ?? 0,
-                                            ).then((value) {});
-
-                                            setState(() => isLoading = false);
+                                            );
+                                            _refreshBrand(); // refresh setelah edit
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  "Brand updated successfully",
+                                                ),
+                                              ),
+                                            );
                                           },
-                                          child: isLoading
-                                              ? const SizedBox(
-                                                  height: 18,
-                                                  width: 18,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                        strokeWidth: 2,
-                                                        color: Colors.white,
-                                                      ),
-                                                )
-                                              : const Text("Simpan"),
+                                          child: const Text("Simpan"),
                                         ),
                                         OutlinedButton(
                                           onPressed: () =>
@@ -281,7 +294,6 @@ class _TambahBrandState extends State<TambahBrand> {
                                       ],
                                     ),
                                   );
-                                  setState(() {});
                                 },
                                 onLongPress: () async {
                                   await showDialog(
@@ -302,7 +314,6 @@ class _TambahBrandState extends State<TambahBrand> {
                                         ),
                                         TextButton(
                                           onPressed: () async {
-                                            Navigator.pop(context);
                                             try {
                                               await BrandAPI.deleteBrand(
                                                 name: dataUser.name ?? "",
@@ -317,7 +328,7 @@ class _TambahBrandState extends State<TambahBrand> {
                                                   ),
                                                 ),
                                               );
-                                              setState(() {});
+                                              _refreshBrand(); // refresh setelah delete
                                             } catch (e) {
                                               ScaffoldMessenger.of(
                                                 context,
@@ -329,6 +340,7 @@ class _TambahBrandState extends State<TambahBrand> {
                                                 ),
                                               );
                                             }
+                                            Navigator.pop(context);
                                           },
                                           child: const Text(
                                             "Hapus",
@@ -433,20 +445,72 @@ class _TambahBrandState extends State<TambahBrand> {
                                   borderRadius: BorderRadius.circular(16),
                                   color: Colors.grey.shade200,
                                 ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    Icon(
-                                      Icons.category,
-                                      size: 48,
-                                      color: Color(0xFF8A6BE4),
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: Image.asset(
+                                        "assets/images/4b547fcf2f6167531e136d9b37aa88dc.jpg",
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                      ),
                                     ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      "Categories",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(16),
+                                        color: Colors.black.withOpacity(0.4),
+                                      ),
+                                    ),
+                                    Center(
+                                      child: Text(
+                                        "Categories",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                context.push(AdminProduct());
+                              },
+                              borderRadius: BorderRadius.circular(16),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  color: Colors.grey.shade200,
+                                ),
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: Image.asset(
+                                        "assets/images/market.jpg",
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                      ),
+                                    ),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(16),
+                                        color: Colors.black.withOpacity(0.4),
+                                      ),
+                                    ),
+                                    Center(
+                                      child: Text(
+                                        "Products",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -459,28 +523,31 @@ class _TambahBrandState extends State<TambahBrand> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF8A6BE4),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF8A6BE4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                    ),
-                    onPressed: () {
-                      PreferenceHandler.removeUserId();
-                      PreferenceHandler.removeToken();
-                      PreferenceHandler.removeLogin();
-                      context.pushReplacement(HalamanMulai());
-                    },
-                    child: Text(
-                      "LOG OUT",
-                      style: TextStyle(
-                        fontFamily: "Poppins",
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                      onPressed: () {
+                        PreferenceHandler.removeUserId();
+                        PreferenceHandler.removeToken();
+                        PreferenceHandler.removeLogin();
+                        context.pushReplacement(HalamanMulai());
+                      },
+                      child: Text(
+                        "LOG OUT",
+                        style: TextStyle(
+                          fontFamily: "Poppins",
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),

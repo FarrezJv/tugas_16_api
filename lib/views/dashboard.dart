@@ -3,8 +3,8 @@ import 'package:tugas_16_api/api/brand.dart';
 import 'package:tugas_16_api/api/category.dart';
 import 'package:tugas_16_api/api/produk.dart';
 import 'package:tugas_16_api/extension/navigation.dart';
+import 'package:tugas_16_api/model/brand/get_brand.dart';
 import 'package:tugas_16_api/model/category/get_categories.dart';
-import 'package:tugas_16_api/model/get_brand.dart';
 import 'package:tugas_16_api/model/products/tampil_produk.dart';
 import 'package:tugas_16_api/utils/gambar.dart';
 import 'package:tugas_16_api/utils/rupiah.dart';
@@ -34,6 +34,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tugas_16_api/api/produk.dart';
 import 'package:tugas_16_api/extension/navigation.dart';
-import 'package:tugas_16_api/model/category/categories_model.dart';
-import 'package:tugas_16_api/model/get_user_modal.dart';
-import 'package:tugas_16_api/model/products/tambah_produk.dart';
 import 'package:tugas_16_api/model/products/tampil_produk.dart';
 import 'package:tugas_16_api/utils/rupiah.dart';
 import 'package:tugas_16_api/views/detail1.dart';
@@ -70,7 +67,7 @@ class _ProductByCategoryPageState extends State<ProductByCategoryPage> {
         displayedProducts = List.from(allProducts);
       } else {
         displayedProducts = allProducts
-            .where((p) => (p?.brand ?? "") == brand)
+            .where((p) => (p.brand ?? "") == brand)
             .toList();
       }
     });

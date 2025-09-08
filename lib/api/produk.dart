@@ -12,31 +12,38 @@ class AuthenticationApiProduct {
   static Future<AddProdukModel> addProduct({
     required String name,
     required String description,
-    required int prices,
+    required int price,
     required int stock,
-    required int categoryId,
     required int brandId,
+    required int categoryId,
     required int discount,
-    required List<File> images,
+    required List<String> images,
   }) async {
     final url = Uri.parse(Endpoint.products);
     final token = await PreferenceHandler.getToken();
-
-    var request = http.MultipartRequest("POST", url);
-
-    for (var img in images) {
-      request.files.add(
-        await http.MultipartFile.fromPath("images[]", img.path),
-      );
-    }
-
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
+    final response = await http.post(
+      url,
+      body: jsonEncode({
+        "name": name,
+        "description": description,
+        "price": price,
+        "stock": stock,
+        "brand_id": brandId,
+        "category_id": categoryId,
+        "discount": discount,
+        "images": images,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
     if (response.statusCode == 200) {
       return AddProdukModel.fromJson(json.decode(response.body));
     } else {
       final error = json.decode(response.body);
-      throw Exception(error["message"] ?? "Failed to add new product");
+      throw Exception(error["message"] ?? "Failed to add new cart");
     }
   }
 
@@ -84,6 +91,36 @@ class AuthenticationApiProduct {
     );
     if (response.statusCode == 200) {
       return DeleteModel.fromJson(json.decode(response.body));
+    } else {
+      final error = json.decode(response.body);
+      throw Exception(error["message"] ?? "Register gagal");
+    }
+  }
+
+  static Future<GetProdukModel> postFotoProduct({
+    required String name,
+    required File image,
+  }) async {
+    final url = Uri.parse(Endpoint.products);
+    final token = await PreferenceHandler.getToken();
+    final readImage = image.readAsBytesSync();
+    final b64 = base64Encode(readImage);
+    final response = await http.post(
+      url,
+      body: {"name": name, "image_base64": b64},
+      headers: {
+        "Accept": "application/json",
+        // "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+    print(image);
+    print(readImage);
+    print(b64);
+    print(response.statusCode);
+    print(response.body);
+    if (response.statusCode == 200) {
+      return GetProdukModel.fromJson(json.decode(response.body)["data"]);
     } else {
       final error = json.decode(response.body);
       throw Exception(error["message"] ?? "Register gagal");

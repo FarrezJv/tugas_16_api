@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:tugas_16_api/api/category.dart';
 import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/model/category/get_categories.dart';
-import 'package:tugas_16_api/shared_preference/shared.dart';
 import 'package:tugas_16_api/utils/gambar.dart';
 import 'package:tugas_16_api/views/detailcategory.dart';
-import 'package:tugas_16_api/views/halaman.dart';
 
 class AdminCategory extends StatefulWidget {
   const AdminCategory({super.key});
@@ -132,7 +130,7 @@ class _AdminCategoryState extends State<AdminCategory> {
                               onTap: () {
                                 context.push(
                                   ProductByCategoryPage(
-                                    categoryId: cat.id,
+                                    categoryId: cat.id ?? 0,
                                     categoryName: cat.name,
                                   ),
                                 );

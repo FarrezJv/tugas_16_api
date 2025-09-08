@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:tugas_16_api/api/endpoint/endpoint.dart';
 import 'package:tugas_16_api/model/category/add_categories.dart';
-import 'package:tugas_16_api/model/category/categories_model.dart';
 import 'package:tugas_16_api/model/category/get_categories.dart';
 import 'package:tugas_16_api/model/delete_model.dart';
 import 'package:tugas_16_api/shared_preference/shared.dart';
@@ -28,8 +26,12 @@ class AuthenticationApiCat {
     }
   }
 
-  static Future<GetCatModel> updateCategories({required String name}) async {
-    final url = Uri.parse(Endpoint.categories);
+  static Future<GetCat> updateCategories({
+    required String name,
+    required int id,
+    // File? image,
+  }) async {
+    final url = Uri.parse("${Endpoint.categories}/$id");
     final token = await PreferenceHandler.getToken();
     final response = await http.put(
       url,
@@ -37,10 +39,10 @@ class AuthenticationApiCat {
       headers: {"Accept": "application/json", "Authorization": "Bearer $token"},
     );
     if (response.statusCode == 200) {
-      return GetCatModel.fromJson(json.decode(response.body));
+      return GetCat.fromJson(json.decode(response.body)["data"]);
     } else {
       final error = json.decode(response.body);
-      throw Exception(error["message"] ?? "Data is not valid");
+      throw Exception(error["message"] ?? "Register gagal");
     }
   }
 
@@ -77,4 +79,25 @@ class AuthenticationApiCat {
       throw Exception(error["message"] ?? "Register gagal");
     }
   }
+
+  // static Future<AddCategoriesModel> tambahBrand({required String name}) async {
+  //   final url = Uri.parse(Endpoint.brand);
+  //   final token = await PreferenceHandler.getToken();
+
+  //   final response = await http.post(
+  //     url,
+  //     body: {"name": name},
+  //     headers: {
+  //       "Accept": "application/json",
+  //       // "Content-Type": "application/json",
+  //       "Authorization": "Bearer $token",
+  //     },
+  //   );
+  //   if (response.statusCode == 200) {
+  //     return AddCategoriesModel.fromJson(json.decode(response.body));
+  //   } else {
+  //     final error = json.decode(response.body);
+  //     throw Exception(error["message"] ?? "Tambah Brand gagal");
+  //   }
+  // }
 }

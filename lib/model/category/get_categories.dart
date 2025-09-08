@@ -27,13 +27,13 @@ class GetCatModel {
 }
 
 class GetCat {
-  int id;
+  int? id;
   String name;
   DateTime createdAt;
   DateTime updatedAt;
 
   GetCat({
-    required this.id,
+    this.id,
     required this.name,
     required this.createdAt,
     required this.updatedAt,

@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:tugas_16_api/API/endpoint/endpoint.dart';
-import 'package:tugas_16_api/model/brand_user_model.dart';
-import 'package:tugas_16_api/model/get_brand.dart';
+import 'package:tugas_16_api/model/brand/brand_user_model.dart';
+import 'package:tugas_16_api/model/brand/get_brand.dart';
 import 'package:tugas_16_api/shared_preference/shared.dart';
 
 class BrandAPI {
