@@ -8,6 +8,7 @@ import 'package:tugas_16_api/model/brand/brand_user_model.dart';
 import 'package:tugas_16_api/model/brand/get_brand.dart';
 import 'package:tugas_16_api/utils/gambar.dart';
 import 'package:tugas_16_api/views/category.dart' hide Card;
+import 'package:tugas_16_api/views/tambah_produk.dart';
 
 class TambahBrand extends StatefulWidget {
   const TambahBrand({super.key});
@@ -475,7 +476,7 @@ class _TambahBrandState extends State<TambahBrand> {
                             ),
                             InkWell(
                               onTap: () {
-                                // context.push(AdminProduct());
+                                context.push(ProductListScreen());
                               },
                               borderRadius: BorderRadius.circular(16),
                               child: Container(

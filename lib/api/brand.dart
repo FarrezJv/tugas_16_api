@@ -53,25 +53,6 @@ class BrandAPI {
       throw Exception(error["message"] ?? "Register gagal");
     }
   }
-
-  // static Future<AddBrand> loginUser({
-  //   required String email,
-  //   required String password,
-  // }) async {
-  //   final url = Uri.parse(Endpoint.login);
-  //   final response = await http.post(
-  //     url,
-  //     body: {"email": email, "password": password},
-  //     headers: {"Accept": "application/json"},
-  //   );
-  //   if (response.statusCode == 200) {
-  //     return AddBrand.fromJson(json.decode(response.body));
-  //   } else {
-  //     final error = json.decode(response.body);
-  //     throw Exception(error["message"] ?? "Register gagal");
-  //   }
-  // }
-
   // static Future<GetBrand> getBrand() async {
   //   final url = Uri.parse(Endpoint.brand);
   //   final token = await PreferenceHandler.getToken();

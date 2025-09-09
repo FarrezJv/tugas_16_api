@@ -56,13 +56,23 @@ class GetProducts {
     id: json["id"],
     name: json["name"],
     description: json["description"],
-    price: json["price"],
-    stock: json["stock"],
-    discount: json["discount"],
+    price: json["price"] is String
+        ? int.tryParse(json["price"]) ?? 0
+        : json["price"] ?? 0,
+    stock: json["stock"] is String
+        ? int.tryParse(json["stock"]) ?? 0
+        : json["stock"] ?? 0,
+    discount: json["discount"] is String
+        ? int.tryParse(json["discount"]) ?? 0
+        : json["discount"] ?? 0,
     category: json["category"],
-    categoryId: json["category_id"],
+    categoryId: json["category_id"] is String
+        ? int.tryParse(json["category_id"]) ?? 0
+        : json["category_id"] ?? 0,
     brand: json["brand"],
-    brandId: json["brand_id"],
+    brandId: json["brand_id"] is String
+        ? int.tryParse(json["brand_id"]) ?? 0
+        : json["brand_id"] ?? 0,
     imageUrls: List<String>.from(json["image_urls"].map((x) => x)),
     imagePaths: List<String>.from(json["image_paths"].map((x) => x)),
   );

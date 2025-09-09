@@ -1,281 +1,192 @@
-// import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:tugas_16_api/api/brand.dart';
+import 'package:tugas_16_api/api/category.dart';
+import 'package:tugas_16_api/api/produk.dart';
+import 'package:tugas_16_api/model/products/tambah_produk.dart';
+import 'package:tugas_16_api/model/products/tampil_produk.dart';
+import 'package:tugas_16_api/widgets/card_product.dart';
+import 'package:tugas_16_api/widgets/produk_edit.dart';
 
-// import 'package:flutter/material.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'package:tugas_16_api/api/produk.dart';
-// import 'package:tugas_16_api/extension/navigation.dart';
-// import 'package:tugas_16_api/model/products/tambah_produk.dart';
-// import 'package:tugas_16_api/utils/gambar.dart';
-// import 'package:tugas_16_api/views/adminproducts.dart'; // kalau kamu pakai asset logo disini
+class ProductListScreen extends StatefulWidget {
+  const ProductListScreen({super.key});
 
-// class AdminProduct extends StatefulWidget {
-//   const AdminProduct({super.key});
+  @override
+  State<ProductListScreen> createState() => _ProductListScreenState();
+}
 
-//   @override
-//   State<AdminProduct> createState() => _AdminProductState();
-// }
+class _ProductListScreenState extends State<ProductListScreen> {
+  List<Detail> _products = [];
+  bool _loading = true;
 
-// class _AdminProductState extends State<AdminProduct> {
-//   final TextEditingController nameController = TextEditingController();
-//   final TextEditingController descriptionController = TextEditingController();
-//   final TextEditingController brandIdController = TextEditingController();
-//   final TextEditingController categoryIdController = TextEditingController();
-//   final TextEditingController priceController = TextEditingController();
-//   final TextEditingController stockController = TextEditingController();
-//   final TextEditingController discountController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _loadProducts();
+  }
 
-//   bool isLoading = false;
-//   AddProdukModel? product;
-//   String? errorMessage;
-//   final ImagePicker _picker = ImagePicker();
-//   XFile? pickedFile;
-//   pickFoto() async {
-//     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-//     print(image);
-//     print(image?.path);
-//     setState(() {
-//       pickedFile = image;
-//     });
-//     // if (image == null) {
-//     //   return;
-//     // } else {
-//     //   final response = await AuthenticationApiProduct.postFotoProduct(
-//     //     name: "ACAK",
-//     //     image: File(image.path),
-//     //   );
-//     //   ScaffoldMessenger.of(
-//     //     context,
-//     //   ).showSnackBar(const SnackBar(content: Text("Berhasil upload gambar")));
-//     // }
-//   }
+  Future<void> _loadProducts() async {
+    setState(() => _loading = true);
+    try {
+      final result = await AuthenticationApiProduct.getProduct();
+      setState(() {
+        _products = result.data;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Gagal memuat produk: $e")));
+    } finally {
+      setState(() => _loading = false);
+    }
+  }
 
-//   Future<void> addProduct() async {
-//     setState(() {
-//       isLoading = true;
-//       errorMessage = null;
-//     });
+  /// Ambil data kategori dan brand dari API
+  Future<Map<String, List<Map<String, dynamic>>>>
+  _fetchCategoryAndBrandLists() async {
+    final kategoriData = await AuthenticationApiCat.getCategories();
+    final brandData = await BrandAPI.getBrand();
 
-//     final name = nameController.text.trim();
-//     final description = descriptionController.text.trim();
-//     final brandId = int.tryParse(brandIdController.text) ?? 0;
-//     final categoryId = int.tryParse(categoryIdController.text) ?? 0;
-//     final price = int.tryParse(priceController.text) ?? 0;
-//     final stock = int.tryParse(stockController.text) ?? 0;
-//     final discount = int.tryParse(discountController.text) ?? 0;
+    final kategoriList = kategoriData.data
+        .map((k) => {'id': k.id, 'name': k.name})
+        .toList();
 
-//     if (name.isEmpty) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text("Product name cannot be empty")),
-//       );
-//       setState(() => isLoading = false);
-//       return;
-//     }
+    final brandList = brandData
+        .map((b) => {'id': b.id, 'name': b.name})
+        .toList();
 
-//     try {
-//       final result = await AuthenticationApiProduct.addProduct(
-//         name: name,
-//         description: description,
-//         brandId: brandId,
-//         categoryId: categoryId,
-//         price: price,
-//         stock: stock,
-//         discount: discount,
-//         images: pickedFile != null ? File(pickedFile!.path) : File(''),
-//         // images: pickedFile != null ? [pickedFile!.path] : [],
-//       );
-//       setState(() {
-//         product = result;
-//       });
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text("Product added successfully")),
-//       );
-//       print(product?.toJson());
-//     } catch (e) {
-//       setState(() {
-//         errorMessage = e.toString();
-//       });
-//       ScaffoldMessenger.of(
-//         context,
-//       ).showSnackBar(SnackBar(content: Text(errorMessage.toString())));
-//     } finally {
-//       setState(() {
-//         isLoading = false;
-//       });
-//     }
-//   }
+    return {'kategori': kategoriList, 'brand': brandList};
+  }
 
-//   Widget _buildTextField({
-//     required TextEditingController controller,
-//     required String label,
-//     TextInputType keyboardType = TextInputType.text,
-//     IconData? icon,
-//   }) {
-//     return Padding(
-//       padding: const EdgeInsets.only(bottom: 16),
-//       child: TextField(
-//         controller: controller,
-//         keyboardType: keyboardType,
-//         decoration: InputDecoration(
-//           labelText: label,
-//           prefixIcon: icon != null ? Icon(icon) : null,
-//           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-//         ),
-//       ),
-//     );
-//   }
+  /// Tambah produk
+  Future<void> _showAddDialog() async {
+    final data = await _fetchCategoryAndBrandLists();
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//          floatingActionButton: FloatingActionButton(
-//         onPressed: () {
-//           context.pushReplacement(Adminproducts());
-//         },
-//         backgroundColor: const Color(0xFF8A6BE4),
-//         child: const Icon(Icons.inventory_2, color: Colors.white),
-//       ),
-//       body: SafeArea(
-//         child: SingleChildScrollView(
-//           padding: const EdgeInsets.all(16),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               /// Logo di atas
-//               Image.asset(AppImage.logo_png, width: 150),
-//               const Text(
-//                 "Admin Product Feature.",
-//                 style: TextStyle(color: Colors.grey),
-//               ),
-//               const SizedBox(height: 20),
+    final result = await showProductFormDialog(
+      context: context,
+      id: null,
+      initialData: null,
+      kategoriList: data['kategori']!,
+      brandList: data['brand']!,
+    );
 
-//               Card(
-//                 elevation: 5,
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(16),
-//                 ),
-//                 child: Padding(
-//                   padding: const EdgeInsets.all(20),
-//                   child: Column(
-//                     children: [
-//                       const Text(
-//                         "Add New Product",
-//                         style: TextStyle(
-//                           fontSize: 18,
-//                           fontWeight: FontWeight.bold,
-//                           color: Color(0xFF8A6BE4),
-//                         ),
-//                       ),
-//                       const SizedBox(height: 16),
+    if (result != null) _loadProducts();
+  }
 
-//                       /// Preview Foto
-//                       pickedFile != null
-//                           ? ClipRRect(
-//                               borderRadius: BorderRadius.circular(12),
-//                               child: Image.file(
-//                                 File(pickedFile!.path),
-//                                 height: 150,
-//                                 width: double.infinity,
-//                                 fit: BoxFit.contain,
-//                               ),
-//                             )
-//                           : Container(
-//                               height: 150,
-//                               width: double.infinity,
-//                               alignment: Alignment.center,
-//                               decoration: BoxDecoration(
-//                                 color: Colors.grey.shade200,
-//                                 borderRadius: BorderRadius.circular(12),
-//                               ),
-//                               child: const Text("No photo selected"),
-//                             ),
-//                       const SizedBox(height: 16),
+  /// Edit produk
+  Future<void> _showEditDialog(Detail product) async {
+    final data = await _fetchCategoryAndBrandLists();
 
-//                       OutlinedButton.icon(
-//                         onPressed: pickFoto,
-//                         icon: const Icon(Icons.image),
-//                         label: const Text("Select Photo"),
-//                       ),
-//                       const SizedBox(height: 16),
+    final initialData = GetProducts(
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: int.tryParse(product.price) ?? 0,
+      stock: int.tryParse(product.stock) ?? 0,
+      discount: int.tryParse(product.discount) ?? 0,
+      category: product.category ?? "",
+      categoryId: int.tryParse(product.categoryId ?? "0") ?? 0,
+      brand: product.brand ?? "",
+      brandId: int.tryParse(product.brandId ?? "0") ?? 0,
+      imageUrls: product.imageUrls ?? [],
+      imagePaths: [], // kosongkan karena ini hanya untuk upload file baru
+    );
 
-//                       /// Form Input
-//                       _buildTextField(
-//                         controller: nameController,
-//                         label: "Product Name",
-//                         icon: Icons.shopping_bag,
-//                       ),
-//                       _buildTextField(
-//                         controller: descriptionController,
-//                         label: "Description",
-//                         icon: Icons.description,
-//                       ),
-//                       _buildTextField(
-//                         controller: brandIdController,
-//                         label: "Brand ID",
-//                         keyboardType: TextInputType.number,
-//                         icon: Icons.store,
-//                       ),
-//                       _buildTextField(
-//                         controller: categoryIdController,
-//                         label: "Category ID",
-//                         keyboardType: TextInputType.number,
-//                         icon: Icons.category,
-//                       ),
-//                       _buildTextField(
-//                         controller: priceController,
-//                         label: "Price",
-//                         keyboardType: TextInputType.number,
-//                         icon: Icons.attach_money,
-//                       ),
-//                       _buildTextField(
-//                         controller: stockController,
-//                         label: "Stock",
-//                         keyboardType: TextInputType.number,
-//                         icon: Icons.inventory,
-//                       ),
-//                       _buildTextField(
-//                         controller: discountController,
-//                         label: "Discount (%)",
-//                         keyboardType: TextInputType.number,
-//                         icon: Icons.percent,
-//                       ),
+    final result = await showProductFormDialog(
+      context: context,
+      id: product.id,
+      initialData: initialData,
+      kategoriList: data['kategori']!,
+      brandList: data['brand']!,
+    );
 
-//                       const SizedBox(height: 20),
+    if (result != null) _loadProducts();
+  }
 
-//                       /// Submit Button
-//                       SizedBox(
-//                         width: double.infinity,
-//                         child: ElevatedButton(
-//                           onPressed: isLoading ? null : addProduct,
-//                           style: ElevatedButton.styleFrom(
-//                             backgroundColor: const Color(0xFF8A6BE4),
-//                             padding: const EdgeInsets.symmetric(vertical: 14),
-//                             shape: RoundedRectangleBorder(
-//                               borderRadius: BorderRadius.circular(12),
-//                             ),
-//                           ),
-//                           child: isLoading
-//                               ? const CircularProgressIndicator(
-//                                   color: Colors.white,
-//                                   strokeWidth: 2,
-//                                 )
-//                               : const Text(
-//                                   "Add Product",
-//                                   style: TextStyle(
-//                                     color: Colors.white,
-//                                     fontWeight: FontWeight.bold,
-//                                     fontSize: 16,
-//                                   ),
-//                                 ),
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+  Future<void> _deleteProduct(int id) async {
+    try {
+      await AuthenticationApiProduct.deleteProduct(productId: id);
+      _loadProducts();
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Gagal menghapus produk: $e")));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.deepPurple,
+        title: const Text(
+          "📦 Daftar Produk",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.white,
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: _showAddDialog,
+            icon: const Icon(Icons.add_circle_outline),
+            color: Colors.white,
+          ),
+        ],
+      ),
+      backgroundColor: const Color(0xFFF5F5F5),
+      body: _loading
+          ? const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(color: Colors.deepPurple),
+                  SizedBox(height: 12),
+                  Text(
+                    "Memuat produk...",
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                ],
+              ),
+            )
+          : _products.isEmpty
+          ? const Center(
+              child: Text(
+                "📭 Belum ada produk yang tersedia.",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.7,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                itemCount: _products.length,
+                itemBuilder: (context, index) {
+                  final product = _products[index];
+                  return Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: ProductCard(
+                      product: product,
+                      onEdit: () => _showEditDialog(product),
+                      onDelete: () => _deleteProduct(product.id),
+                    ),
+                  );
+                },
+              ),
+            ),
+    );
+  }
+}
