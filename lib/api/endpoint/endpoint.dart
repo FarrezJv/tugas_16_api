@@ -9,4 +9,6 @@ class Endpoint {
   static const String categories = "$baseURL/categories";
   static const String cart = "$baseURL/cart";
   static const String checkout = "$baseURL/checkout";
+  static const String reviews = "$baseURL/reviews";
+  static const String history = "$baseURL/history";
 }

@@ -20,15 +20,40 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   late Future<GetCatModel> futureCategory;
   late Future<GetProdukModel> futureProduct;
-  final TextEditingController nameController = TextEditingController();
-  GetBrand? userData;
-  bool isLoading = true;
-  String errorMessage = '';
+  final TextEditingController searchController = TextEditingController();
+
+  List<Detail> allProducts = []; // semua produk
+  List<Detail> filteredProducts = []; // hasil filter
+
   @override
   void initState() {
     super.initState();
     futureProduct = AuthenticationApiProduct.getProduct();
     futureCategory = AuthenticationApiCat.getCategories();
+
+    // dengarkan perubahan search
+    searchController.addListener(() {
+      filterProducts();
+    });
+  }
+
+  void filterProducts() {
+    String query = searchController.text.toLowerCase();
+    setState(() {
+      if (query.isEmpty) {
+        filteredProducts = allProducts;
+      } else {
+        filteredProducts = allProducts
+            .where((p) => p.name.toLowerCase().contains(query))
+            .toList();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -43,11 +68,13 @@ class _DashboardPageState extends State<DashboardPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Image.asset(AppImage.logo_png, width: 150),
-                Text(
+                const Text(
                   "Welcome to BrandNow.",
                   style: TextStyle(color: Colors.grey),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
+
+                // 🔍 Search
                 Row(
                   children: [
                     Expanded(
@@ -57,7 +84,8 @@ class _DashboardPageState extends State<DashboardPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: TextField(
-                          decoration: InputDecoration(
+                          controller: searchController,
+                          decoration: const InputDecoration(
                             hintText: "Search...",
                             prefixIcon: Icon(Icons.search),
                             border: InputBorder.none,
@@ -69,22 +97,24 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Container(
-                      padding: EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: const Color(0xFF8A6BE4),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Icon(Icons.mic, color: Colors.white),
+                      child: const Icon(Icons.mic, color: Colors.white),
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
 
+                const SizedBox(height: 20),
+
+                // 🔹 Brand Section
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                  children: const [
                     Text(
                       "Choose Brand",
                       style: TextStyle(
@@ -95,121 +125,86 @@ class _DashboardPageState extends State<DashboardPage> {
                     Text("View All", style: TextStyle(color: Colors.grey)),
                   ],
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
 
-                Row(
-                  children: [
-                    Expanded(
-                      child: FutureBuilder<List<GetBrandData>>(
-                        future: BrandAPI.getBrand(),
-                        builder:
-                            (
-                              BuildContext context,
-                              AsyncSnapshot<List<GetBrandData>> snapshot,
-                            ) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                  child: SizedBox(
-                                    width: 50,
-                                    height: 50,
-                                    child: const CircularProgressIndicator(
-                                      strokeWidth: 4,
+                FutureBuilder<List<GetBrandData>>(
+                  future: BrandAPI.getBrand(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return const Text("Gagal Memuat Brand");
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Text("No Brand found");
+                    }
+
+                    final brands = snapshot.data!;
+                    return SizedBox(
+                      height: 50,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: brands.length,
+                        itemBuilder: (context, index) {
+                          final b = brands[index];
+                          return Container(
+                            margin: const EdgeInsets.only(right: 10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(30),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 4,
+                                  offset: Offset(2, 2),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (b.imageUrl != null &&
+                                    b.imageUrl!.isNotEmpty)
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Image.network(
+                                      b.imageUrl!,
+                                      height: 24,
+                                      width: 24,
+                                      fit: BoxFit.cover,
                                     ),
+                                  )
+                                else
+                                  const Icon(
+                                    Icons.image_not_supported,
+                                    size: 24,
                                   ),
-                                );
-                              } else if (snapshot.hasData) {
-                                final brands = snapshot.data!;
-                                return SizedBox(
-                                  height: 50,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: brands.length,
-                                    itemBuilder: (BuildContext context, int index) {
-                                      final dataUser = brands[index];
-                                      return Column(
-                                        children: [
-                                          GestureDetector(
-                                            child: Container(
-                                              margin: EdgeInsets.only(
-                                                right: 10,
-                                              ),
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal: 20,
-                                                vertical: 12,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: Colors.grey.shade300,
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black12,
-                                                    blurRadius: 4,
-                                                    offset: Offset(2, 2),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  if (dataUser.imageUrl !=
-                                                          null &&
-                                                      dataUser
-                                                          .imageUrl!
-                                                          .isNotEmpty)
-                                                    ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            20,
-                                                          ),
-                                                      child: Image.network(
-                                                        dataUser.imageUrl!,
-                                                        height: 24,
-                                                        width: 24,
-                                                        fit: BoxFit.cover,
-                                                      ),
-                                                    )
-                                                  else
-                                                    Icon(
-                                                      Icons.image_not_supported,
-                                                      color: Colors.black,
-                                                      size: 24,
-                                                    ),
-
-                                                  SizedBox(width: 8),
-
-                                                  Text(
-                                                    dataUser.name ?? "",
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
+                                const SizedBox(width: 8),
+                                Text(
+                                  b.name ?? "",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                );
-                              } else {
-                                return const Text("Gagal Memuat data");
-                              }
-                            },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
-                SizedBox(height: 20),
 
+                const SizedBox(height: 20),
+
+                // 🔹 Produk Section
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                  children: const [
                     Text(
                       "New Arrival",
                       style: TextStyle(
@@ -220,7 +215,8 @@ class _DashboardPageState extends State<DashboardPage> {
                     Text("View All", style: TextStyle(color: Colors.grey)),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
+
                 FutureBuilder<GetProdukModel>(
                   future: futureProduct,
                   builder: (context, snapshot) {
@@ -233,11 +229,16 @@ class _DashboardPageState extends State<DashboardPage> {
                       return const Text("No Products found");
                     }
 
-                    final products = snapshot.data!.data;
+                    // simpan semua produk sekali saja
+                    if (allProducts.isEmpty) {
+                      allProducts = snapshot.data!.data;
+                      filteredProducts = allProducts;
+                    }
+
                     return GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: products.length,
+                      itemCount: filteredProducts.length,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
@@ -246,7 +247,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             childAspectRatio: 0.65,
                           ),
                       itemBuilder: (context, index) {
-                        final p = products[index];
+                        final p = filteredProducts[index];
                         return GestureDetector(
                           onTap: () {
                             context.push(ProductDetailPage(product: p));
@@ -266,6 +267,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // gambar produk
                                 Stack(
                                   children: [
                                     ClipRRect(
@@ -288,7 +290,6 @@ class _DashboardPageState extends State<DashboardPage> {
                                               ),
                                             ),
                                     ),
-
                                     if (p.discount.isNotEmpty)
                                       Positioned(
                                         bottom: 8,
@@ -316,7 +317,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       ),
                                   ],
                                 ),
-
+                                // detail produk
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
@@ -333,7 +334,6 @@ class _DashboardPageState extends State<DashboardPage> {
                                         ),
                                       ),
                                       const SizedBox(height: 4),
-
                                       if (p.discount.isNotEmpty) ...[
                                         Text(
                                           formatRupiah(p.price),
@@ -379,75 +379,6 @@ class _DashboardPageState extends State<DashboardPage> {
                     );
                   },
                 ),
-
-                // GridView.builder(
-                //   shrinkWrap: true,
-                //   physics: NeverScrollableScrollPhysics(),
-                //   itemCount: products.length,
-                //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                //     crossAxisCount: 2,
-                //     childAspectRatio: 0.65,
-                //     crossAxisSpacing: 12,
-                //     mainAxisSpacing: 12,
-                //   ),
-                //   itemBuilder: (context, index) {
-                //     final product = products[index];
-                //     return Container(
-                //       decoration: BoxDecoration(
-                //         borderRadius: BorderRadius.circular(12),
-                //         color: Colors.grey.shade100,
-                //       ),
-                //       child: Column(
-                //         crossAxisAlignment: CrossAxisAlignment.start,
-                //         children: [
-                //           Expanded(
-                //             child: Stack(
-                //               children: [
-                //                 ClipRRect(
-                //                   borderRadius: BorderRadius.vertical(
-                //                     top: Radius.circular(12),
-                //                   ),
-                //                   child: Image.network(
-                //                     product["image"]!,
-                //                     fit: BoxFit.cover,
-                //                     width: double.infinity,
-                //                   ),
-                //                 ),
-                //                 Positioned(
-                //                   top: 8,
-                //                   right: 8,
-                //                   child: Icon(
-                //                     Icons.favorite_border,
-                //                     color: Colors.grey,
-                //                   ),
-                //                 ),
-                //               ],
-                //             ),
-                //           ),
-                //           Padding(
-                //             padding: EdgeInsets.all(8.0),
-                //             child: Column(
-                //               crossAxisAlignment: CrossAxisAlignment.start,
-                //               children: [
-                //                 Text(
-                //                   product["name"]!,
-                //                   maxLines: 2,
-                //                   overflow: TextOverflow.ellipsis,
-                //                   style: TextStyle(fontWeight: FontWeight.w500),
-                //                 ),
-                //                 SizedBox(height: 4),
-                //                 Text(
-                //                   product["price"]!,
-                //                   style: TextStyle(fontWeight: FontWeight.bold),
-                //                 ),
-                //               ],
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //     );
-                //   },
-                // ),
               ],
             ),
           ),

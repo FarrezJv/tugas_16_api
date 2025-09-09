@@ -1,251 +1,147 @@
-import 'package:flutter/material.dart';
-import 'package:tugas_16_api/api/produk.dart';
-import 'package:tugas_16_api/extension/navigation.dart';
-import 'package:tugas_16_api/model/products/tampil_produk.dart';
-import 'package:tugas_16_api/utils/gambar.dart';
-import 'package:tugas_16_api/utils/rupiah.dart';
-import 'package:tugas_16_api/views/detail1.dart';
-import 'package:tugas_16_api/widgets/botnav.dart';
+// import 'package:flutter/material.dart';
+// import 'package:tugas_16_api/api/brand.dart';
+// import 'package:tugas_16_api/api/category.dart';
+// import 'package:tugas_16_api/api/produk.dart';
+// import 'package:tugas_16_api/model/products/tambah_produk.dart';
+// import 'package:tugas_16_api/model/products/tampil_produk.dart';
+// import 'package:tugas_16_api/widgets/product_desain.dart';
+// import 'package:tugas_16_api/widgets/produk_edit.dart';
 
-class Adminproducts extends StatefulWidget {
-  const Adminproducts({super.key});
+// class Adminproducts extends StatefulWidget {
+//   const Adminproducts({super.key});
 
-  @override
-  State<Adminproducts> createState() => _AdminproductsState();
-}
+//   @override
+//   State<Adminproducts> createState() => _AdminproductsState();
+// }
 
-class _AdminproductsState extends State<Adminproducts> {
-  late Future<GetProdukModel> futureProduct;
+// class _AdminproductsState extends State<Adminproducts> {
+//   List<Detail> _products = [];
+//   bool _loading = true;
 
-  @override
-  void initState() {
-    super.initState();
-    futureProduct = AuthenticationApiProduct.getProduct();
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadProducts();
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push(BotnavPage());
-        },
-        backgroundColor: const Color(0xFF8A6BE4),
-        child: Icon(Icons.arrow_back, color: Colors.white),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.asset(AppImage.logo_png, width: 150),
-                const Text(
-                  "Admin Product Page",
-                  style: TextStyle(color: Colors.grey),
-                ),
-                const SizedBox(height: 20),
+//   Future<void> _loadProducts() async {
+//     setState(() => _loading = true);
+//     try {
+//       final result = await AuthenticationApiProduct.getProduct();
+//       setState(() {
+//         _products = result.data;
+//       });
+//     } catch (e) {
+//       ScaffoldMessenger.of(
+//         context,
+//       ).showSnackBar(SnackBar(content: Text("Gagal memuat produk: $e")));
+//     } finally {
+//       setState(() => _loading = false);
+//     }
+//   }
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Text(
-                      "Manage Products",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text("View All", style: TextStyle(color: Colors.grey)),
-                  ],
-                ),
-                const SizedBox(height: 20),
+//   /// Ambil data kategori dan brand dari API
+//   Future<Map<String, List<Map<String, dynamic>>>>
+//   _fetchCategoryAndBrandLists() async {
+//     final kategoriData = await AuthenticationApiCat.getCategories();
+//     final brandData = await BrandAPI.getBrand();
 
-                FutureBuilder<GetProdukModel>(
-                  future: futureProduct,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Text("Error: ${snapshot.error}");
-                    } else if (!snapshot.hasData ||
-                        snapshot.data!.data.isEmpty) {
-                      return const Text("No Products found");
-                    }
+//     final kategoriList = kategoriData.data
+//         .map((k) => {'id': k.id, 'name': k.name})
+//         .toList();
 
-                    final products = snapshot.data!.data;
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: products.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                            childAspectRatio: 0.65,
-                          ),
-                      itemBuilder: (context, index) {
-                        final p = products[index];
-                        return GestureDetector(
-                          onTap: () {
-                            context.push(ProductDetailPage(product: p));
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Stack(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(16),
-                                      ),
-                                      child: p.imageUrls.isNotEmpty
-                                          ? Image.network(
-                                              p.imageUrls[0],
-                                              height: 150,
-                                              width: double.infinity,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : Container(
-                                              height: 150,
-                                              color: Colors.grey[200],
-                                              child: const Icon(
-                                                Icons.image,
-                                                size: 50,
-                                              ),
-                                            ),
-                                    ),
-                                    Positioned(
-                                      top: 8,
-                                      right: 8,
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.white
-                                            .withOpacity(0.8),
-                                        child: IconButton(
-                                          icon: Icon(
-                                            Icons.delete,
-                                            color: Colors.red,
-                                          ),
-                                          onPressed: () async {
-                                            final confirm = await showDialog<bool>(
-                                              context: context,
-                                              builder: (context) => AlertDialog(
-                                                title: Text("Hapus Produk"),
-                                                content: Text(
-                                                  "Yakin mau hapus ${p.name}?",
-                                                ),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () =>
-                                                        Navigator.pop(
-                                                          context,
-                                                          false,
-                                                        ),
-                                                    child: Text("Batal"),
-                                                  ),
-                                                  TextButton(
-                                                    onPressed: () =>
-                                                        Navigator.pop(
-                                                          context,
-                                                          true,
-                                                        ),
-                                                    child: Text("Hapus"),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
+//     final brandList = brandData.data
+//         .map((b) => {'id': b.id, 'name': b.name})
+//         .toList();
 
-                                            if (confirm == true) {
-                                              try {
-                                                await AuthenticationApiProduct.deleteProducts(
-                                                  name: p.name,
-                                                  id: p.id,
-                                                );
+//     return {'kategori': kategoriList, 'brand': brandList};
+//   }
 
-                                                setState(() {
-                                                  futureProduct =
-                                                      AuthenticationApiProduct.getProduct();
-                                                });
+//   /// Tambah produk
+//   Future<void> _showAddDialog() async {
+//     final data = await _fetchCategoryAndBrandLists();
 
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      "Produk ${p.name} berhasil dihapus",
-                                                    ),
-                                                  ),
-                                                );
-                                              } catch (e) {
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      "Gagal hapus produk: $e",
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                            }
-                                          },
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    p.name,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                  ),
-                                  child: Text(
-                                    formatRupiah(p.price),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//     final result = await showProductFormDialog(
+//       context: context,
+//       id: null,
+//       initialData: null,
+//       kategoriList: data['kategori']!,
+//       brandList: data['brand']!,
+//     );
+
+//     if (result != null) _loadProducts();
+//   }
+
+//   /// Edit produk
+//   Future<void> _showEditDialog(Detail product) async {
+//     final data = await _fetchCategoryAndBrandLists();
+
+//     final initialData = GetProducts(
+//       id: product.id,
+//       name: product.name,
+//       description: product.description,
+//       price: int.tryParse(product.price) ?? 0,
+//       stock: int.tryParse(product.stock) ?? 0,
+//       discount: int.tryParse(product.discount) ?? 0,
+//       category: product.category ?? "",
+//       categoryId: int.tryParse(product.categoryId ?? "0") ?? 0,
+//       brand: product.brand ?? "",
+//       brandId: int.tryParse(product.brandId ?? "0") ?? 0,
+//       imageUrls: product.imageUrls ?? [],
+//       imagePaths: [], // kosongkan karena ini hanya untuk upload file baru
+//     );
+
+//     final result = await showProductFormDialog(
+//       context: context,
+//       id: product.id,
+//       initialData: initialData,
+//       kategoriList: data['kategori']!,
+//       brandList: data['brand']!,
+//     );
+
+//     if (result != null) _loadProducts();
+//   }
+
+//   Future<void> _deleteProduct(int id) async {
+//     try {
+//       await AuthenticationApiProduct.deleteProduct(productId: id);
+//       _loadProducts();
+//     } catch (e) {
+//       ScaffoldMessenger.of(
+//         context,
+//       ).showSnackBar(SnackBar(content: Text("Gagal menghapus produk: $e")));
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text("Daftar Produk"),
+//         actions: [IconButton(onPressed: _showAddDialog, icon: Icon(Icons.add))],
+//       ),
+//       body: _loading
+//           ? Center(child: CircularProgressIndicator())
+//           : _products.isEmpty
+//           ? Center(child: Text("Belum ada produk"))
+//           : GridView.builder(
+//               padding: EdgeInsets.all(12),
+//               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+//                 crossAxisCount: 2,
+//                 childAspectRatio: 0.75,
+//                 crossAxisSpacing: 10,
+//                 mainAxisSpacing: 10,
+//               ),
+//               itemCount: _products.length,
+//               itemBuilder: (context, index) {
+//                 final product = _products[index];
+//                 return ProductDesign(
+//                   product: product,
+//                   onEdit: () => _showEditDialog(product),
+//                   onDelete: () => _deleteProduct(product.id),
+//                 );
+//               },
+//             ),
+//     );
+//   }
+// }

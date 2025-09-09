@@ -33,6 +33,8 @@ dependencies:
   http: ^1.5.0
   shared_preferences: ^2.5.3
   image_picker: ^1.2.0
+  flutter_rating: ^2.0.2
+
 
   
 

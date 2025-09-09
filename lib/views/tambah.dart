@@ -6,12 +6,8 @@ import 'package:tugas_16_api/api/brand.dart';
 import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/model/brand/brand_user_model.dart';
 import 'package:tugas_16_api/model/brand/get_brand.dart';
-import 'package:tugas_16_api/shared_preference/shared.dart';
 import 'package:tugas_16_api/utils/gambar.dart';
-import 'package:tugas_16_api/views/adminproducts.dart';
 import 'package:tugas_16_api/views/category.dart' hide Card;
-import 'package:tugas_16_api/views/halaman.dart';
-import 'package:tugas_16_api/views/tambah_produk.dart';
 
 class TambahBrand extends StatefulWidget {
   const TambahBrand({super.key});
@@ -100,13 +96,7 @@ class _TambahBrandState extends State<TambahBrand> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.pushReplacement(Adminproducts());
-        },
-        backgroundColor: const Color(0xFF8A6BE4),
-        child: const Icon(Icons.inventory_2, color: Colors.white),
-      ),
+
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -392,6 +382,13 @@ class _TambahBrandState extends State<TambahBrand> {
                                           ),
                                         ),
                                       ),
+                                      Text(
+                                        dataUser.id.toString() ?? "",
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -478,7 +475,7 @@ class _TambahBrandState extends State<TambahBrand> {
                             ),
                             InkWell(
                               onTap: () {
-                                context.push(AdminProduct());
+                                // context.push(AdminProduct());
                               },
                               borderRadius: BorderRadius.circular(16),
                               child: Container(
@@ -520,35 +517,6 @@ class _TambahBrandState extends State<TambahBrand> {
                           ],
                         ),
                       ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF8A6BE4),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () {
-                        PreferenceHandler.removeUserId();
-                        PreferenceHandler.removeToken();
-                        PreferenceHandler.removeLogin();
-                        context.pushReplacement(HalamanMulai());
-                      },
-                      child: Text(
-                        "LOG OUT",
-                        style: TextStyle(
-                          fontFamily: "Poppins",
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
                     ),
                   ),
                 ),

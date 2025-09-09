@@ -10,9 +10,9 @@ String getBrandToJson(GetBrand data) => json.encode(data.toJson());
 
 class GetBrand {
   String? message;
-  List<GetBrandData>? data;
+  List<GetBrandData> data;
 
-  GetBrand({this.message, this.data});
+  GetBrand({this.message, required this.data});
 
   factory GetBrand.fromJson(Map<String, dynamic> json) => GetBrand(
     message: json["message"],
@@ -25,9 +25,7 @@ class GetBrand {
 
   Map<String, dynamic> toJson() => {
     "message": message,
-    "data": data == null
-        ? []
-        : List<dynamic>.from(data!.map((x) => x.toJson())),
+    "data": data == null ? [] : List<dynamic>.from(data.map((x) => x.toJson())),
   };
 }
 

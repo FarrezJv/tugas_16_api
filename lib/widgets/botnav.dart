@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tugas_16_api/views/admin_category.dart';
-import 'package:tugas_16_api/views/category.dart';
 import 'package:tugas_16_api/views/dashboard.dart';
+import 'package:tugas_16_api/views/reviews.dart';
 import 'package:tugas_16_api/views/tambah.dart';
 
 class BotnavPage extends StatefulWidget {
@@ -16,8 +16,10 @@ class _BotnavPageState extends State<BotnavPage> {
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
     DashboardPage(),
-    TambahBrand(),
     AdminCategory(),
+    ReviewScreen(),
+    TambahBrand(),
+    // ReviewPage(),
   ];
 
   @override
@@ -28,12 +30,13 @@ class _BotnavPageState extends State<BotnavPage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.admin_panel_settings),
-            label: 'Admin Feature',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.category),
             label: 'Categories',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.reviews), label: 'review'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.admin_panel_settings),
+            label: 'Admin Feature',
           ),
           // BottomNavigationBarItem(
           //   icon: Icon(Icons.sign_language),

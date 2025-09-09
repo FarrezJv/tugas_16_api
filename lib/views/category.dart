@@ -295,6 +295,13 @@ class _CategoryTabState extends State<CategoryTab> {
                                         ),
                                       ),
                                     ),
+                                    Text(
+                                      cat.id.toString(),
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),

@@ -12,30 +12,86 @@ class AuthenticationApiProduct {
   static Future<AddProdukModel> addProduct({
     required String name,
     required String description,
-    required int price,
+    required int prices,
     required int stock,
-    required int brandId,
     required int categoryId,
+    required int brandId,
     required int discount,
-    required File images,
-    // required List<String> images,
+    required List<File> images,
   }) async {
     final url = Uri.parse(Endpoint.products);
     final token = await PreferenceHandler.getToken();
-    final readImage = images.readAsBytesSync();
-    final b64 = base64Encode(readImage);
+
+    List<String> base64Images = [];
+    for (var img in images) {
+      final bytes = await img.readAsBytes();
+      final base64Str =
+          "data:image/${img.path.split('.').last};base64,${base64Encode(bytes)}";
+      base64Images.add(base64Str);
+    }
+
     final response = await http.post(
       url,
       body: jsonEncode({
         "name": name,
         "description": description,
-        "price": price,
-        "stock": stock,
-        "brand_id": brandId,
-        "category_id": categoryId,
-        "discount": discount,
-        "image_base64": b64,
-        "images": images,
+        "price": prices.toString(),
+        "stock": stock.toString(),
+        "category_id": categoryId.toString(),
+        "brand_id": brandId.toString(),
+        "discount": discount.toString(),
+        "images": base64Images,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return AddProdukModel.fromJson(json.decode(response.body));
+    } else {
+      final error = json.decode(response.body);
+      throw Exception(error["message"] ?? "Failed to add new product");
+    }
+  }
+
+  static Future<AddProdukModel> updateProduct({
+    required int id,
+    required String name,
+    required String description,
+    required int prices,
+    required int stock,
+    required int categoryId,
+    required int brandId,
+    required int discount,
+    required List<File>? images,
+  }) async {
+    final url = Uri.parse("${Endpoint.products}/$id");
+    final token = await PreferenceHandler.getToken();
+
+    List<String> base64Images = [];
+    if (images != null) {
+      for (var img in images) {
+        final bytes = await img.readAsBytes();
+        final base64Str =
+            "data:image/${img.path.split('.').last};base64,${base64Encode(bytes)}";
+        base64Images.add(base64Str);
+      }
+    }
+
+    final response = await http.put(
+      url,
+      body: jsonEncode({
+        "name": name,
+        "description": description,
+        "price": prices.toString(),
+        "stock": stock.toString(),
+        "category_id": categoryId.toString(),
+        "brand_id": brandId.toString(),
+        "discount": discount.toString(),
+        "images": base64Images,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -45,22 +101,6 @@ class AuthenticationApiProduct {
     );
     if (response.statusCode == 200) {
       return AddProdukModel.fromJson(json.decode(response.body));
-    } else {
-      final error = json.decode(response.body);
-      throw Exception(error["message"] ?? "Failed to add new cart");
-    }
-  }
-
-  static Future<GetProdukModel> updateProduct({required String name}) async {
-    final url = Uri.parse(Endpoint.products);
-    final token = await PreferenceHandler.getToken();
-    final response = await http.put(
-      url,
-      body: {"name": name},
-      headers: {"Accept": "application/json", "Authorization": "Bearer $token"},
-    );
-    if (response.statusCode == 200) {
-      return GetProdukModel.fromJson(json.decode(response.body));
     } else {
       final error = json.decode(response.body);
       throw Exception(error["message"] ?? "Data is not valid");
@@ -82,52 +122,22 @@ class AuthenticationApiProduct {
     }
   }
 
-  static Future<DeleteModel> deleteProducts({
-    required String name,
-    required int id,
-  }) async {
-    final url = Uri.parse("${Endpoint.products}/$id");
+  static Future<DeleteModel> deleteProduct({required int productId}) async {
+    final url = Uri.parse("${Endpoint.products}/$productId");
     final token = await PreferenceHandler.getToken();
+
     final response = await http.delete(
       url,
-      body: {"name": name},
       headers: {"Accept": "application/json", "Authorization": "Bearer $token"},
     );
+
     if (response.statusCode == 200) {
       return DeleteModel.fromJson(json.decode(response.body));
     } else {
       final error = json.decode(response.body);
-      throw Exception(error["message"] ?? "Register gagal");
+      throw Exception(error["message"] ?? "Failed to delete product");
     }
   }
 
-  // static Future<GetProdukModel> postFotoProduct({
-  //   required String name,
-  //   required File image,
-  // }) async {
-  //   final url = Uri.parse(Endpoint.products);
-  //   final token = await PreferenceHandler.getToken();
-  //   final readImage = image.readAsBytesSync();
-  //   final b64 = base64Encode(readImage);
-  //   final response = await http.post(
-  //     url,
-  //     body: {"name": name, "image_base64": b64},
-  //     headers: {
-  //       "Accept": "application/json",
-  //       // "Content-Type": "application/json",
-  //       "Authorization": "Bearer $token",
-  //     },
-  //   );
-  //   print(image);
-  //   print(readImage);
-  //   print(b64);
-  //   print(response.statusCode);
-  //   print(response.body);
-  //   if (response.statusCode == 200) {
-  //     return GetProdukModel.fromJson(json.decode(response.body)["data"]);
-  //   } else {
-  //     final error = json.decode(response.body);
-  //     throw Exception(error["message"] ?? "Register gagal");
-  //   }
-  // }
+  //???????????????????????????????????
 }

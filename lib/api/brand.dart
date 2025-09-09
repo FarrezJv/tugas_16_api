@@ -72,6 +72,21 @@ class BrandAPI {
   //   }
   // }
 
+  // static Future<GetBrand> getBrand() async {
+  //   final url = Uri.parse(Endpoint.brand);
+  //   final token = await PreferenceHandler.getToken();
+  //   final response = await http.get(
+  //     url,
+  //     headers: {"Accept": "application/json", "Authorization": "Bearer $token"},
+  //   );
+  //   if (response.statusCode == 200) {
+  //     return GetBrand.fromJson(json.decode(response.body));
+  //   } else {
+  //     final error = json.decode(response.body);
+  //     throw Exception(error["message"] ?? "Get data is not valid");
+  //   }
+  // }
+
   static Future<GetBrand> updateBrand({
     required String name,
     required int id,
