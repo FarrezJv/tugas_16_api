@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tugas_16_api/views/admin_category.dart';
-import 'package:tugas_16_api/views/dashboard.dart';
-import 'package:tugas_16_api/views/reviews.dart';
-import 'package:tugas_16_api/views/tambah.dart';
+import 'package:tugas_16_api/views/add_Screen/tambah.dart';
+import 'package:tugas_16_api/views/auth_screen/dashboard.dart';
+import 'package:tugas_16_api/views/category_views/admin_category.dart';
+import 'package:tugas_16_api/views/reviews/reviews.dart';
 
 class BotnavPage extends StatefulWidget {
   const BotnavPage({super.key});

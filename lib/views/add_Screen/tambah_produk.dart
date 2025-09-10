@@ -4,6 +4,7 @@ import 'package:tugas_16_api/api/category.dart';
 import 'package:tugas_16_api/api/produk.dart';
 import 'package:tugas_16_api/model/products/tambah_produk.dart';
 import 'package:tugas_16_api/model/products/tampil_produk.dart';
+import 'package:tugas_16_api/utils/gambar.dart';
 import 'package:tugas_16_api/widgets/card_product.dart';
 import 'package:tugas_16_api/widgets/produk_edit.dart';
 
@@ -118,20 +119,22 @@ class _ProductListScreenState extends State<ProductListScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.deepPurple,
-        title: const Text(
-          "📦 Daftar Produk",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Colors.white,
-          ),
-        ),
+        backgroundColor: Colors.white,
+        // foregroundColor: Colors.deepPurple,
+        // title: const Text(
+        //   "📦 Daftar Produk",
+        //   style: TextStyle(
+        //     fontWeight: FontWeight.bold,
+        //     fontSize: 20,
+        //     color: Colors.white,
+        //   ),
+        // ),
+        title: Image.asset(AppImage.logo_png, width: 150),
         actions: [
           IconButton(
             onPressed: _showAddDialog,
             icon: const Icon(Icons.add_circle_outline),
-            color: Colors.white,
+            color: const Color(0xFF8A6BE4),
           ),
         ],
       ),
@@ -141,7 +144,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(color: Colors.deepPurple),
+                  CircularProgressIndicator(color: Color(0xFF8A6BE4)),
                   SizedBox(height: 12),
                   Text(
                     "Memuat produk...",

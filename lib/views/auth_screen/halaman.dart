@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tugas_16_api/extension/navigation.dart';
-import 'package:tugas_16_api/views/login.dart';
-import 'package:tugas_16_api/views/register.dart';
+import 'package:tugas_16_api/views/auth_screen/login.dart';
+import 'package:tugas_16_api/views/auth_screen/register.dart';
 
 class HalamanMulai extends StatelessWidget {
   const HalamanMulai({super.key});

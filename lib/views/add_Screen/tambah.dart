@@ -7,8 +7,8 @@ import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/model/brand/brand_user_model.dart';
 import 'package:tugas_16_api/model/brand/get_brand.dart';
 import 'package:tugas_16_api/utils/gambar.dart';
-import 'package:tugas_16_api/views/category.dart' hide Card;
-import 'package:tugas_16_api/views/tambah_produk.dart';
+import 'package:tugas_16_api/views/add_Screen/tambah_produk.dart';
+import 'package:tugas_16_api/views/category_views/category.dart' hide Card;
 
 class TambahBrand extends StatefulWidget {
   const TambahBrand({super.key});
@@ -260,11 +260,13 @@ class _TambahBrandState extends State<TambahBrand> {
                                         OutlinedButton(
                                           onPressed: () async {
                                             Navigator.of(context).pop();
+                                            // nameController.clear();
                                             await BrandAPI.updateBrand(
                                               name: nameController.text,
                                               id: dataUser.id ?? 0,
                                             );
-                                            _refreshBrand(); // refresh setelah edit
+                                            _refreshBrand();
+                                            // setState(() {});
                                             ScaffoldMessenger.of(
                                               context,
                                             ).showSnackBar(
@@ -274,6 +276,7 @@ class _TambahBrandState extends State<TambahBrand> {
                                                 ),
                                               ),
                                             );
+                                            // setState(() {});
                                           },
                                           child: const Text("Simpan"),
                                         ),
@@ -319,7 +322,8 @@ class _TambahBrandState extends State<TambahBrand> {
                                                   ),
                                                 ),
                                               );
-                                              _refreshBrand(); // refresh setelah delete
+
+                                              _refreshBrand();
                                             } catch (e) {
                                               ScaffoldMessenger.of(
                                                 context,

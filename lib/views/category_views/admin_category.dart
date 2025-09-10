@@ -3,7 +3,7 @@ import 'package:tugas_16_api/api/category.dart';
 import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/model/category/get_categories.dart';
 import 'package:tugas_16_api/utils/gambar.dart';
-import 'package:tugas_16_api/views/detailcategory.dart';
+import 'package:tugas_16_api/views/category_views/detailcategory.dart';
 
 class AdminCategory extends StatefulWidget {
   const AdminCategory({super.key});

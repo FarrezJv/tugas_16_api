@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tugas_16_api/api/produk.dart';
@@ -16,16 +17,14 @@ Future<AddProdukModel?> showProductFormDialog({
     text: initialData?.description ?? '',
   );
   final priceController = TextEditingController(
-    text: int.tryParse(initialData?.price?.toString() ?? '0')?.toString() ?? '',
+    text: initialData?.price != null ? initialData!.price.toString() : '',
   );
 
   final stockController = TextEditingController(
-    text: int.tryParse(initialData?.stock?.toString() ?? '0')?.toString() ?? '',
+    text: initialData?.stock != null ? initialData!.stock.toString() : '',
   );
   final discountController = TextEditingController(
-    text:
-        int.tryParse(initialData?.discount?.toString() ?? '0')?.toString() ??
-        '',
+    text: initialData?.discount != null ? initialData!.discount.toString() : '',
   );
 
   String? selectedCategory;
@@ -59,7 +58,7 @@ Future<AddProdukModel?> showProductFormDialog({
             }
           }
 
-          Future<void> _submit() async {
+          Future<void> submit() async {
             if (nameController.text.isEmpty ||
                 descriptionController.text.isEmpty ||
                 priceController.text.isEmpty ||
@@ -70,7 +69,7 @@ Future<AddProdukModel?> showProductFormDialog({
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text(
-                    "Semua field wajib diisi dan gambar wajib dipilih (untuk tambah).",
+                    "All fields are required and at least one image must be selected (for adding).",
                   ),
                 ),
               );
@@ -114,7 +113,7 @@ Future<AddProdukModel?> showProductFormDialog({
             } catch (e) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Gagal simpan produk: $e")),
+                  SnackBar(content: Text("Failed to save product: $e")),
                 );
               }
             } finally {
@@ -123,39 +122,43 @@ Future<AddProdukModel?> showProductFormDialog({
           }
 
           return AlertDialog(
-            title: Text(id == null ? "Tambah Produk" : "Edit Produk"),
+            title: Text(id == null ? "Add Product" : "Edit Product"),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
                     controller: nameController,
-                    decoration: const InputDecoration(labelText: "Nama Produk"),
+                    decoration: const InputDecoration(
+                      labelText: "Product Name",
+                    ),
                   ),
                   TextField(
                     controller: descriptionController,
-                    decoration: const InputDecoration(labelText: "Deskripsi"),
+                    decoration: const InputDecoration(labelText: "Description"),
                     maxLines: 3,
                   ),
                   TextField(
                     controller: priceController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: "Harga"),
+                    decoration: const InputDecoration(labelText: "Price"),
                   ),
                   TextField(
                     controller: stockController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: "Stok"),
+                    decoration: const InputDecoration(labelText: "Stock"),
                   ),
                   TextField(
                     controller: discountController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: "Diskon (%)"),
+                    decoration: const InputDecoration(
+                      labelText: "Discount (%)",
+                    ),
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<int>(
                     value: selectedCategoryId,
-                    decoration: const InputDecoration(labelText: "Kategori"),
+                    decoration: const InputDecoration(labelText: "Category"),
                     items: kategoriList.map((kategori) {
                       return DropdownMenuItem<int>(
                         value: kategori["id"],
@@ -216,7 +219,7 @@ Future<AddProdukModel?> showProductFormDialog({
                   TextButton.icon(
                     onPressed: pickImages,
                     icon: const Icon(Icons.image),
-                    label: const Text("Pilih Gambar"),
+                    label: const Text("Choose Images"),
                   ),
                 ],
               ),
@@ -224,7 +227,7 @@ Future<AddProdukModel?> showProductFormDialog({
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Batal"),
+                child: const Text("Cancel"),
               ),
               isLoading
                   ? const SizedBox(
@@ -233,8 +236,8 @@ Future<AddProdukModel?> showProductFormDialog({
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : ElevatedButton(
-                      onPressed: _submit,
-                      child: Text(id == null ? "Tambah" : "Simpan"),
+                      onPressed: submit,
+                      child: Text(id == null ? "Add" : "Save"),
                     ),
             ],
           );

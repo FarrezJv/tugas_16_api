@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:tugas_16_api/API/endpoint/endpoint.dart';
+import 'package:tugas_16_api/model/brand/brand_user_model.dart';
 import 'package:tugas_16_api/model/brand/get_brand.dart';
 import 'package:tugas_16_api/shared_preference/shared.dart';
 
@@ -68,7 +69,7 @@ class BrandAPI {
   //   }
   // }
 
-  static Future<GetBrand> updateBrand({
+  static Future<AddBrandData> updateBrand({
     required String name,
     required int id,
     File? image,
@@ -81,7 +82,7 @@ class BrandAPI {
       headers: {"Accept": "application/json", "Authorization": "Bearer $token"},
     );
     if (response.statusCode == 200) {
-      return GetBrand.fromJson(json.decode(response.body));
+      return AddBrandData.fromJson(json.decode(response.body)["data"]);
     } else {
       final error = json.decode(response.body);
       throw Exception(error["message"] ?? "Register gagal");

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tugas_16_api/api/history_api.dart';
 import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/model/history/history.dart';
-import 'package:tugas_16_api/views/reviews_page.dart';
+import 'package:tugas_16_api/views/reviews/reviews_page.dart';
 
 class ToRateTab extends StatefulWidget {
   final Function(Goods) onReviewed;

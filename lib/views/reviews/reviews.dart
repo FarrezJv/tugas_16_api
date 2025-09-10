@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/shared_preference/shared.dart';
-import 'package:tugas_16_api/views/halaman.dart';
-import 'package:tugas_16_api/views/review_tab.dart';
+import 'package:tugas_16_api/views/auth_screen/halaman.dart';
+import 'package:tugas_16_api/views/reviews/review_tab.dart';
 import 'package:tugas_16_api/widgets/tab.dart';
 
 class ReviewScreen extends StatefulWidget {

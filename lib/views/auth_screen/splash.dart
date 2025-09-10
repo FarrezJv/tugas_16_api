@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/shared_preference/shared.dart';
 import 'package:tugas_16_api/utils/gambar.dart';
-import 'package:tugas_16_api/views/halaman.dart';
+import 'package:tugas_16_api/views/auth_screen/halaman.dart';
 import 'package:tugas_16_api/widgets/botnav.dart';
 
 class Day16SplashScreen extends StatefulWidget {

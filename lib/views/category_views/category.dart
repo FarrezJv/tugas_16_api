@@ -166,6 +166,7 @@ class _CategoryTabState extends State<CategoryTab> {
                           children: categories.map((cat) {
                             return InkWell(
                               onTap: () async {
+                                nameController.clear();
                                 await showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(

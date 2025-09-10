@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tugas_16_api/views/halaman.dart';
-import 'package:tugas_16_api/views/splash.dart';
+import 'package:tugas_16_api/views/auth_screen/halaman.dart';
+import 'package:tugas_16_api/views/auth_screen/splash.dart';
 import 'package:tugas_16_api/widgets/botnav.dart';
 
 void main() {

@@ -3,7 +3,7 @@ import 'package:tugas_16_api/api/produk.dart';
 import 'package:tugas_16_api/extension/navigation.dart';
 import 'package:tugas_16_api/model/products/tampil_produk.dart';
 import 'package:tugas_16_api/utils/rupiah.dart';
-import 'package:tugas_16_api/views/detail1.dart';
+import 'package:tugas_16_api/views/auth_screen/detail1.dart';
 
 class ProductByCategoryPage extends StatefulWidget {
   final int categoryId;

@@ -8,7 +8,7 @@ import 'package:tugas_16_api/model/category/get_categories.dart';
 import 'package:tugas_16_api/model/products/tampil_produk.dart';
 import 'package:tugas_16_api/utils/gambar.dart';
 import 'package:tugas_16_api/utils/rupiah.dart';
-import 'package:tugas_16_api/views/detail1.dart';
+import 'package:tugas_16_api/views/auth_screen/detail1.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
